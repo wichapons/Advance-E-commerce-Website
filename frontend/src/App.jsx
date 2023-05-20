@@ -3,8 +3,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoutesComponents from "./components/ProtectedRoutesComponents";
 
 //components
+//footer and header
 import FooterComponent from "./components/FooterComponent";
 import HeaderComponent from "./components/HeaderComponent";
+//user components
+import RoutesWithUserChatComponent from "./components/user/RoutesWithUserChatComponent";
+
+//Utilities
+import ScrollToTop from './utils/ScrollToTop'
+
 
 //unprotected pages
 import HomePage from "./pages/HomePage";
@@ -34,24 +41,28 @@ import AdminAnalyticsPage from "./pages/admin/AdminAnalyticsPage";
 
 function App() {
   return (
-    
     <BrowserRouter>
+      <ScrollToTop/>
       <HeaderComponent />
-      {/* unprotected routes */}
       <Routes>
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/product-list" element={<ProductListPage />} />
-        <Route path="/product-detail/:id" element={<ProductDetailsPage />} />
-        <Route path="/register" element={<RegistrationPage />} />
+        {/* Add chat box in these route */}
+        <Route element={<RoutesWithUserChatComponent />}>
+          {/* unprotected routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/product-list" element={<ProductListPage />} />
+          <Route path="/product-details/:id" element={<ProductDetailsPage />} />
+          <Route path="/register" element={<RegistrationPage />} />
 
-        {/* user protected routes */}
-        <Route element={<ProtectedRoutesComponents />}>
-          <Route path="/user" element={<UserProfilePage />} />
-          <Route path="/user/my-orders" element={<UserOrdersPage />} />
-          <Route path="/user/cart-details" element={<UserCartDetailsPage />} />
-          <Route path="/user/order-details" element={<UserOrderDetailsPage />} />
+          {/* user protected routes */}
+          <Route element={<ProtectedRoutesComponents />}>
+            <Route path="/user" element={<UserProfilePage />} />
+            <Route path="/user/my-orders" element={<UserOrdersPage />} />
+            <Route path="/user/cart-details" element={<UserCartDetailsPage />} />
+            <Route path="/user/order-details" element={<UserOrderDetailsPage />} />
+          </Route>
         </Route>
 
         {/* admin protected routes: */}
