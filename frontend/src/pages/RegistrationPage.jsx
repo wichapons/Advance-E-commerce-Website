@@ -1,7 +1,7 @@
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Spinner from 'react-bootstrap/Spinner'
+import Spinner from "react-bootstrap/Spinner";
 
 /*
 TO BE DONE IN FUTURE
@@ -47,9 +47,30 @@ const RegistrationPage = () => {
     }
 */
 
-
 const RegistrationPage = () => {
   const [validated, setValidated] = useState(false);
+
+  //check password match for confirmed password input
+  const checkIsPasswordMatch = () => {
+    const password = document.querySelector("input[name=password]");
+    const confirm = document.querySelector("input[name=confirmPassword]");
+    if (confirm.value === password.value) {
+      confirm.setCustomValidity("");
+    } else {
+      confirm.setCustomValidity("Passwords do not match");
+    }
+  };
+
+  const isValidEmailInput = () => {
+    const emailInput = document.querySelector("input[name=email]");
+    const email = emailInput.value;
+
+    if (email.includes("@")) {
+      emailInput.setCustomValidity("");
+    } else {
+      emailInput.setCustomValidity("Please enter a valid email address");
+    }
+  };
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -60,6 +81,7 @@ const RegistrationPage = () => {
 
     setValidated(true);
   };
+
   return (
     <Container>
       <Row className="mt-5 justify-content-md-center">
@@ -97,12 +119,13 @@ const RegistrationPage = () => {
                 required
                 type="email"
                 placeholder="Enter email"
+                onChange={isValidEmailInput}
               />
               <Form.Control.Feedback type="invalid">
                 Please anter a valid email address
               </Form.Control.Feedback>
             </Form.Group>
-             {/* Password Input */}
+            {/* Password Input */}
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
               <Form.Control
@@ -111,6 +134,7 @@ const RegistrationPage = () => {
                 type="password"
                 placeholder="Password"
                 minLength={6}
+                onChange={checkIsPasswordMatch}
               />
               <Form.Control.Feedback type="invalid">
                 Please anter a valid password
@@ -128,6 +152,7 @@ const RegistrationPage = () => {
                 type="password"
                 placeholder="Repeat Password"
                 minLength={6}
+                onChange={checkIsPasswordMatch}
               />
               <Form.Control.Feedback type="invalid">
                 Both passwords should match
@@ -152,10 +177,10 @@ const RegistrationPage = () => {
               Submit
             </Button>
             <Alert show={true} variant="danger">
-                User with that email already exists!
+              User with that email already exists!
             </Alert>
             <Alert show={true} variant="info">
-                User created
+              User created
             </Alert>
           </Form>
         </Col>
@@ -165,4 +190,3 @@ const RegistrationPage = () => {
 };
 
 export default RegistrationPage;
-
