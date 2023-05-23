@@ -52,7 +52,7 @@ const HeaderComponent = () => {
                 </NavDropdown>
                 <Nav.Link href="/login">Login </Nav.Link>
                 <Nav.Link href="/register">Register </Nav.Link>
-                <Nav.Link href="#cart"> 
+                <Nav.Link href="/cart"> 
                   <Badge pill bg="danger" >1</Badge>
                   <i className="bi bi-cart"></i> 
                     Cart
