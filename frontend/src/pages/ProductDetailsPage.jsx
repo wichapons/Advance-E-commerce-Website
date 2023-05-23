@@ -1,13 +1,4 @@
-import {
-  Row,
-  Col,
-  Container,
-  Image,
-  ListGroup,
-  Form,
-  Button,
-  Alert,
-} from "react-bootstrap";
+import {Row,Col,Container,Image,ListGroup,Form,Button,Alert,} from "react-bootstrap";
 import { Rating } from "react-simple-star-rating";
 import AddedToCartMessageComponent from "../components/AddedToCartMessageComponent";
 import ImageZoom from "js-image-zoom";
@@ -38,7 +29,7 @@ window.onload = runImageZoomAfterPageLoad;
     new ImageZoom(document.querySelector(".second"), options);
     new ImageZoom(document.querySelector(".third"), options);
     new ImageZoom(document.querySelector(".fourth"), options);
-  });
+  },[]);
 
   return (
     <Container>
