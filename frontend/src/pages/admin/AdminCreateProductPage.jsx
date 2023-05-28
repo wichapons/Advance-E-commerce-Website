@@ -8,7 +8,6 @@ const AdminCreateProductPage = () => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
-      event.stopPropagation()
     }
 
     setValidated(true);
