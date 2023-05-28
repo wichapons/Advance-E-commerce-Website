@@ -144,7 +144,7 @@ const AdminEditProductPage = () => {
               <Form.Label>Images</Form.Label>
               <Row>
                 <Col style={{position:"relative"}} xs={3}>
-                  <Image src="/images/games-category.png" fluid/>
+                  <Image crossOrigin="anonymous" src="/images/games-category.png" fluid/>
                   <i style={closeBtnStyle} class="bi bi-x-circle-fill"></i>
                 </Col>
               </Row>
