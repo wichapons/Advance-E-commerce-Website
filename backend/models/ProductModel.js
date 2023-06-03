@@ -1,7 +1,5 @@
 const mongoose = require("mongoose")
-//const Review = require("./ReviewModel")
-
-
+const Review = require("./ReviewModel")
 const imagePathSchema = mongoose.Schema({
     path: {type: String, required: true}
 })
@@ -11,7 +9,7 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true,
         //unique: true,
-    }/*,
+    },
     description: {
         type: String,
         required: true,
@@ -40,23 +38,23 @@ const productSchema = mongoose.Schema({
     },
     attrs: [
         {key: {type: String}, value: {type: String}}
-        // [{ key: "color", value: "red" }, { key: "size", value: "1 TB" }]
+       // example [{ key: "color", value: "red" }, { key: "size", value: "1 TB" }]
     ],
-    images: [imagePathSchema],
+    imagePath: [imagePathSchema],
     reviews: [
         {
+            //populate review document to this schema
             type: mongoose.Schema.Types.ObjectId,
-            //ref: Review,
+            ref: Review,
         }
-    ]*/
-}, {
-    timestamps: true,
-})
+    ]
+    }, {timestamps: true,} //add timestamp after Product was saved in the DB
+)
 
 const Product = mongoose.model("Product", productSchema)
-
-//productSchema.index({name: "text", description: "text"}, {name: "TextIndex"})
-//productSchema.index({"attrs.key":1, "attrs.value":1})
-// productSchema.index({name: -1})
+//create index for increase query performance when users search a product 
+productSchema.index({name: "text", description: "text"}, {name: "TextIndex"}) 
+productSchema.index({"attrs.key":1, "attrs.value":1}) // 1 mean Ascenden order
+productSchema.index({name: -1})
 
 module.exports = Product
