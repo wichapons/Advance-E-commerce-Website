@@ -7,7 +7,7 @@ const categorySchema = mongoose.Schema({
   attrs: [{ key: { type: String }, value: [{ type: String }] }],
 });
 
-//catagorized to sorting from A->Z
+//add index and sort from A->Z
 categorySchema.index({description:1})
 
 const Category = mongoose.model("Category", categorySchema);
