@@ -1,32 +1,40 @@
+//Config
+require('dotenv').config();
 //Express.js
 const express = require('express')
 const app = express()
 //Database 
 const mongoose = require('mongoose')
 const connectDB = require('./config/db')
+//Database connection
+connectDB();
 //Model
 const Product = require('./models/ProductModel')
-
-//config
-require('dotenv').config();
-
-
-const port = 5000
-
+//Routes
 const apiRoutes = require("./routes/apiRoutes")
+
+app.use(express.json());
 
 app.use("/api", apiRoutes);
 
+
+
+
+//Error handling
 app.use((error, req, res, next) => {
-  res.status(500).json({
-    message: error.message,
-    stack: error.stack,
-  });
+  const response = {
+    message: error.message
+  };
+  //send the detailed error when in dev mode ONLY
+  if (process.env.SERVER_MODE === 'dev'){
+    response.stack = error.stack;
+  }
+  //console.log(error);
+  res.status(500).json(response);
+  return;
 });
 
-//Database connection
-connectDB();
-
-app.listen(port, () => {
+//Start server
+app.listen(process.env.PORT, () => {
   console.log(`Server started successfully on port ${process.env.PORT}`)
 })
