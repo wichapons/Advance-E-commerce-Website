@@ -40,7 +40,7 @@ const productSchema = mongoose.Schema({
         {key: {type: String}, value: {type: String}}
        // example [{ key: "color", value: "red" }, { key: "size", value: "1 TB" }]
     ],
-    imagePath: [imagePathSchema],
+    image: [imagePathSchema],
     reviews: [
         {
             //populate review document to this schema
