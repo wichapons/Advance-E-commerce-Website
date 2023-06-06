@@ -15,19 +15,14 @@ const port = 5000
 
 const apiRoutes = require("./routes/apiRoutes")
 
-app.get('/',async (req, res,next) => {
-  try{
-    const product = new Product;
-    product.name = "PC";
-    await product.save();
-    const products = await Product.find();
-    res.send(`product has been create for ${products.length} ${product.id}`)
-  }catch(err){
-    next(err)
-  }
-})
+app.use("/api", apiRoutes);
 
-app.use('/api', apiRoutes)
+app.use((error, req, res, next) => {
+  res.status(500).json({
+    message: error.message,
+    stack: error.stack,
+  });
+});
 
 //Database connection
 connectDB();
