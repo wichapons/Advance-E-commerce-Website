@@ -17,9 +17,6 @@ app.use(express.json());
 
 app.use("/api", apiRoutes);
 
-
-
-
 //Error handling
 app.use((error, req, res, next) => {
   const response = {
