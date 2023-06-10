@@ -3,6 +3,19 @@ const recordsPerPage = require("../config/pagination");
 
 const getProducts = async (req, res, next) => {
   try {
+    //Query logic
+    let query;
+    let queryConditions = []; //set initial state of query to don't have any queries
+
+    //Search bar section
+    const categoryName = req.params.categoryName || "";
+    if (categoryName) {
+      let formatedCategoryData = categoryName.replaceAll(",", "/"); //just in case category started with /pc/dell
+      let regEx = new RegExp("^" + formatedCategoryData);
+      queryConditions.push({ category: regEx }); //push category for query
+    }
+
+    //Filter section
     //Page number logic
     let pageNum = Number(req.query.pageNum); //get value after ? sign
     if (!pageNum) {
@@ -17,10 +30,6 @@ const getProducts = async (req, res, next) => {
       sort = { [sortOpt[0]]: Number(sortOpt[1]) }; //warp [] with key proptery that is variable
     }
 
-    //Query logic
-    let query;
-    let queryConditions = []; //set initial state of query to don't have any queries
-
     //sort by price less than xxx
     if (req.query.price) {
       queryConditions.push({ price: { $lte: Number(req.query.price) } }); //show products less than xxx dollars
@@ -29,10 +38,42 @@ const getProducts = async (req, res, next) => {
     if (req.query.rating) {
       queryConditions.push({ rating: { $in: req.query.rating.split(",") } }); //req will be like 1,2,3,4
     }
+    //sort by category
+    if (req.query.category) {
+      let categories = req.query.category.split(",").map((item) => {
+        if (item) {
+          return new RegExp("^" + item); //cuz I use map here so it will stack up in the array of req.query.category.split(",")
+        } //The resulting array will contain the three regular expression objects: [new RegExp("^electronics"), new RegExp("^laptops"), new RegExp("^phones")].
+      });
+      queryConditions.push({ category: { $in: categories } });
+    }
+
+    //sort by attribute
+    if (req.query.attrs) {
+      // data format that will send from front-end --> attrs=RAM-1TB-2TB-4TB,color-blue-red 
+      let attrsQueryCondition = req.query.attrs.split(",").reduce((acc, item) => {
+          if (item) {
+            let attrArray = item.split("-");
+            let copyAttrArray = [...attrArray];
+            copyAttrArray.shift(); // removes first item
+            let attributeForQuery = {
+              attrs: {$elemMatch: {key: attrArray[0],value: { $in: copyAttrArray }}} // $elemMatch for find match exact doc with key and value, // use $in for make mongoDB look data in values separately
+            };
+            acc.push(attributeForQuery);
+            return acc;
+          } else {
+            return acc;
+          }
+        }, []);
+      //   console.dir(attrsQueryCondition, { depth: null });
+      queryConditions.push(...attrsQueryCondition);
+    }
+
+    console.log(queryConditions);
     //join query when there is an query
     if (queryConditions.length > 0) {
       query = {
-        $and: [queryConditions], //$and operator expects an array of conditions as its value.
+        $and: queryConditions, //$and operator expects an array of conditions as its value.
       };
     }
 
