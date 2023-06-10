@@ -7,15 +7,28 @@ const getProducts = async (req, res, next) => {
     let query;
     let queryConditions = []; //set initial state of query to don't have any queries
 
-    //Search bar section
-    const categoryName = req.params.categoryName || "";
+    //***** Search bar section START***** //
+    //category selection
+    const categoryName = req.params.categoryName;
     if (categoryName) {
       let formatedCategoryData = categoryName.replaceAll(",", "/"); //just in case category started with /pc/dell
       let regEx = new RegExp("^" + formatedCategoryData);
       queryConditions.push({ category: regEx }); //push category for query
     }
+    // search product by text
+    const searchTextQuery = req.params.searchTextQuery;
+    let searchTextQueryCondition = {};
+    let select = {};
+    if(searchTextQuery) {
+      searchTextQueryCondition = { $text: { $search: searchTextQuery}};  //search by $text index which we already assign in the product model
+      select = {score: { $meta: "textscore" }}; // {score: { $meta: "textscore" }}; fixed term for get the search score based on user input
+      sort = { score: { $meta: "textScore" } };// sort by score
+      queryConditions.push(searchTextQueryCondition);
+    }  
+    //***** Search bar section END***** //
 
-    //Filter section
+
+    //***** Filter section START***** //
     //Page number logic
     let pageNum = Number(req.query.pageNum); //get value after ? sign
     if (!pageNum) {
@@ -69,18 +82,26 @@ const getProducts = async (req, res, next) => {
       queryConditions.push(...attrsQueryCondition);
     }
 
-    console.log(queryConditions);
+    //***** Filter section END***** //
+
     //join query when there is an query
     if (queryConditions.length > 0) {
       query = {
-        $and: queryConditions, //$and operator expects an array of conditions as its value.
+        $and: queryConditions //$and operator expects an array of conditions as its value.
       };
     }
 
-    const totalProducts = await Product.countDocuments(query); //get the total number of products based on query
+    //overwrite sorting by meta score if user search via search box
+    if(searchTextQuery){
+      sort = { score: { $meta: "textScore" } };  
+    }
+
+    //get the total number of products based on query
+    const totalProducts = await Product.countDocuments(query); 
 
     //get products sorted by name
     const products = await Product.find(query)
+      .select(select)// select = show this field in DB
       .skip(recordsPerPage * (pageNum - 1))
       .sort(sort) // format like {name: 1 or -1}
       .limit(recordsPerPage);
@@ -89,7 +110,7 @@ const getProducts = async (req, res, next) => {
     res.json({
       products,
       pageNum,
-      paginationLinksNumber: Math.ceil(totalProducts / recordsPerPage), //always round up decimal results
+      paginationLinksNumber: Math.ceil(totalProducts / recordsPerPage) //always round up decimal results
     });
   } catch (error) {
     next(error);
@@ -97,5 +118,5 @@ const getProducts = async (req, res, next) => {
 };
 
 module.exports = {
-  getProducts: getProducts,
+  getProducts: getProducts
 };
