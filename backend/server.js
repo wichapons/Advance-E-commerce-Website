@@ -12,6 +12,10 @@ connectDB();
 const Product = require('./models/ProductModel')
 //Routes
 const apiRoutes = require("./routes/apiRoutes")
+//Express file upload
+const fileUpload = require("express-fileupload")
+
+app.use(fileUpload())
 
 app.use(express.json());
 
