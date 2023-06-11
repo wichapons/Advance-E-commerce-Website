@@ -4,8 +4,7 @@ const recordsPerPage = require("../config/pagination");
 const getProducts = async (req, res, next) => {
   try {
     //Query logic
-    let query;
-    let queryConditions = []; //set initial state of query to don't have any queries
+    let queryConditions = []; //set initial state of query for using in db searching
 
     //***** Search bar section START***** //
     //category selection
@@ -81,9 +80,10 @@ const getProducts = async (req, res, next) => {
       //   console.dir(attrsQueryCondition, { depth: null });
       queryConditions.push(...attrsQueryCondition);
     }
-
     //***** Filter section END***** //
 
+    //***** Query section START***** //
+    let query;
     //join query when there is an query
     if (queryConditions.length > 0) {
       query = {
@@ -105,6 +105,8 @@ const getProducts = async (req, res, next) => {
       .skip(recordsPerPage * (pageNum - 1))
       .sort(sort) // format like {name: 1 or -1}
       .limit(recordsPerPage);
+      
+    //***** Query section END***** //
 
     //send the product details, page number and total number of pages
     res.json({
@@ -117,6 +119,32 @@ const getProducts = async (req, res, next) => {
   }
 };
 
+const getProductById = async (req,res,next)=>{
+  try{
+    const products = await Product.findById(req.params.id).populate('reviews').orFail(); //join review table instead of showing only reviewID
+    res.json(products);
+  }catch(err){
+    next(err);
+  }
+}
+
+const getBestsellers = async (req,res,next)=>{
+  try{
+    const products = await Product.aggregate([
+      {$sort:{category:1,sales:-1}}, //sort by category first then each catrgory sort by sales volumn
+      {$group:{_id:"$category", max_sale_product:{$first:"$$ROOT"}}}, //$ will look at the each category and select only the first one $$ROOT will get all of the key value in that doc
+      {$replaceWith:"$max_sale_product"}, //replace max_sale_product to be a original key-value
+      {$project:{ _id: 1, name: 1, images: 1, category: 1, description: 1 }}, //select only field needed
+      {$limit:3},
+    ]);
+    res.json(products);
+  }catch(err){
+    next(err);
+  }
+}
+
 module.exports = {
-  getProducts: getProducts
+  getProducts: getProducts,
+  getProductById:getProductById,
+  getBestsellers:getBestsellers
 };
