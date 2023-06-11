@@ -1,5 +1,6 @@
 const Product = require("../models/ProductModel");
 const recordsPerPage = require("../config/pagination");
+const imageValidate = require("../utils/imageValidate");
 
 const getProducts = async (req, res, next) => {
   try {
@@ -105,7 +106,7 @@ const getProducts = async (req, res, next) => {
       .skip(recordsPerPage * (pageNum - 1))
       .sort(sort) // format like {name: 1 or -1}
       .limit(recordsPerPage);
-      
+
     //***** Query section END***** //
 
     //send the product details, page number and total number of pages
@@ -118,7 +119,7 @@ const getProducts = async (req, res, next) => {
     next(error);
   }
 };
-
+//get product by ID
 const getProductById = async (req,res,next)=>{
   try{
     const products = await Product.findById(req.params.id).populate('reviews').orFail(); //join review table instead of showing only reviewID
@@ -127,7 +128,7 @@ const getProductById = async (req,res,next)=>{
     next(err);
   }
 }
-
+//get top 3 bestseller 
 const getBestsellers = async (req,res,next)=>{
   try{
     const products = await Product.aggregate([
@@ -142,9 +143,111 @@ const getBestsellers = async (req,res,next)=>{
     next(err);
   }
 }
+//get product on admin page
+const adminGetProducts = async (req,res,next)=>{
+  try{
+    const products = await Product.find({})
+    .sort({ category: 1 })
+    .select({ name: 1, price: 1, category: 1 }); //show only specific field
+    return res.json(products);
+  }catch(err){
+    next(err);
+  }
+}
+//delete product on admin page
+const adminDeleteProduct = async (req, res, next) => {
+  try {
+      const product = await Product.findById(req.params.id).orFail();
+      await product.deleteOne();
+      console.log(product);
+      res.json({ message: `${product.name} has been removed successfully` });
+  } catch(err) {
+      next(err)
+  }
+}
+
+const adminCreateProduct = async(req, res, next) => {
+  try {
+      const product = new Product(); //create new product
+      const { name, description, count, price, category,attributesTable  } = req.body //get all input from frontend
+      product.name = name
+      product.description = description
+      product.count = count
+      product.price = price
+      product.category = category
+      if( attributesTable && attributesTable.length > 0 ) {
+          attributesTable.map((item) => { // input will be in form of array so need to loop through first
+              product.attrs.push(item)
+          })
+      }
+      await product.save()
+
+      res.json({
+          message: "product created",
+          productId: product._id,
+          productName:product.name
+      })
+  } catch(err) {
+      next(err)
+  }
+}
+
+const adminUpdateProduct = async (req, res, next) => {
+  try {
+     const product = await Product.findById(req.params.id).orFail()
+     const { name, description, count, price, category, attributesTable } = req.body
+     product.name = name || product.name //in case that name does not exits from input will use same data in DB
+     product.description = description || product.description 
+     product.count = count || product.count
+     product.price = price || product.price
+     product.category = category || product.category
+     if( attributesTable && attributesTable.length > 0 ) {
+         product.attrs = []
+         attributesTable.map((item) => {
+             product.attrs.push(item)
+         })
+     } else {
+         product.attrs = []
+     }
+     await product.save()
+     res.json({
+        message: "product updated" 
+     })
+  } catch(err) {
+      next(err)
+  }
+}
+
+const adminUpload = async (req, res, next) => {
+  try {
+      if(!req.files || !req.files.images) {  //if one file uploaded req.files.images will become object, >1 become array
+        return res.status(400).send("No files were uploaded.")
+  }
+      //check file type and number of uploaded files not exceed the limitaion
+      const validateResult = imageValidate(req.files.images)
+      if(validateResult.error) {
+          return res.status(400).send(validateResult.error)
+      }
+      if (req.files.images.length>1) {
+          res.send("You sent " + req.files.images.length + " images")
+      } else {
+          res.send("You sent only one image")
+      }
+  } catch(err) {
+      next(err)
+  }
+}
+
 
 module.exports = {
   getProducts: getProducts,
   getProductById:getProductById,
-  getBestsellers:getBestsellers
+  getBestsellers:getBestsellers,
+  adminGetProducts:adminGetProducts,
+  adminDeleteProduct:adminDeleteProduct,
+  adminCreateProduct:adminCreateProduct,
+  adminUpdateProduct:adminUpdateProduct,
+  adminUpload:adminUpload,
 };
+
+
