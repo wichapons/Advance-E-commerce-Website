@@ -1,6 +1,8 @@
 const Product = require("../models/ProductModel");
 const recordsPerPage = require("../config/pagination");
 const imageValidate = require("../utils/imageValidate");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 const getProducts = async (req, res, next) => {
   try {
@@ -228,16 +230,36 @@ const adminUpload = async (req, res, next) => {
       if(validateResult.error) {
           return res.status(400).send(validateResult.error)
       }
-      if (req.files.images.length>1) {
-          res.send("You sent " + req.files.images.length + " images")
+      //check if images(req.files.images) is array or not
+      let imagesArray = []
+      if(Array.isArray(req.files.images)) { 
+          imagesArray = req.files.images
       } else {
-          res.send("You sent only one image")
+          imagesArray.push(req.files.images)
       }
+      
+      //upload logic 
+      const uploadDirectory = path.resolve(__dirname,"../../frontend","public","images","products")
+      const productDoc = await Product.findById(req.query.productId).orFail(); //get product doc by id
+
+      for(let image of imagesArray) {
+        let fileName = uuidv4() + path.extname(image.name);
+        let uploadPath = uploadDirectory + "/" + fileName;
+            // Await the file move operation
+            await image.mv(uploadPath, function(err) { 
+                if(err) {
+                    return res.status(500).send(err);
+                }
+            });
+            //push path (object format) for each image
+            productDoc.images.push({path:"/images/products/"+fileName}) 
+        }
+        await productDoc.save();
+        return res.send("file uploaded").status(200);
   } catch(err) {
       next(err)
   }
 }
-
 
 module.exports = {
   getProducts: getProducts,
