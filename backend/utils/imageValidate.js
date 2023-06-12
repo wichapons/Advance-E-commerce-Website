@@ -10,15 +10,15 @@ const imageValidate = (images) => {
         return { error: "Send only 3 images at once" }
     }
     const maxFileSize = 1024*1024;
-    for(let image of imagesArray) {
-        if(image.size > maxFileSize) {
+    for(let image of imagesArray) { // check each image 
+        if(image.size > maxFileSize) { // check file size 
             return ({error: "Size too large (above 1 MB)"})
         }
         const Allowedfiletypes = /jpg|jpeg|png/ //allowed file type
         //check if mimetype is jpg|jpeg|png
         const fileType = Allowedfiletypes.test(image.mimetype); //mimetype = media file extension  
         if(!fileType) {
-            return ({ error: "Incorrect mime type (should be jpg,jpeg or png" })
+            return ({ error: "Incorrect mime type (should be jpg,jpeg or png)" })
         }
     }
     return { error: false }
