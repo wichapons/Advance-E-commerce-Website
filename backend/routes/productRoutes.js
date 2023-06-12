@@ -13,6 +13,7 @@ router.get("/get-one/:id", productController.getProductById)
 // admin routes
 router.get("/admin", productController.adminGetProducts)
 router.delete("/admin/delete/:id", productController.adminDeleteProduct)
+router.delete("/admin/image/:imagePath/:productId", productController.adminDeleteProductImage)
 router.post("/admin/create", productController.adminCreateProduct)
 router.put("/admin/update/:id", productController.adminUpdateProduct)
 router.post("/admin/upload", productController.adminUpload)

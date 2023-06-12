@@ -3,6 +3,7 @@ const recordsPerPage = require("../config/pagination");
 const imageValidate = require("../utils/imageValidate");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
+const fs = require("fs");
 
 const getProducts = async (req, res, next) => {
   try {
@@ -261,6 +262,30 @@ const adminUpload = async (req, res, next) => {
   }
 }
 
+const adminDeleteProductImage = async (req, res,next) => {
+  try {
+    const imagePath = decodeURIComponent(req.params.imagePath);
+    const finalPath = path.resolve("../frontend/public") + imagePath; //join path with absolute format
+
+    fs.unlink(finalPath, (err) => { //remove file
+      if (err) {
+        res.status(500).send(err);
+      }
+    });
+    //update db
+    await Product.findOneAndUpdate(
+      { _id: req.params.productId }, //find product with specific id
+      { $pull: { images: { path: imagePath } } } //remove path
+    ).orFail();
+    await Product.save();
+    return res.status(200).send("delete successfully")
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
 module.exports = {
   getProducts: getProducts,
   getProductById:getProductById,
@@ -270,6 +295,7 @@ module.exports = {
   adminCreateProduct:adminCreateProduct,
   adminUpdateProduct:adminUpdateProduct,
   adminUpload:adminUpload,
+  adminDeleteProductImage:adminDeleteProductImage,
 };
 
 
