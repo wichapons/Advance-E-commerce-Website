@@ -1,22 +1,21 @@
 //Config
 require('dotenv').config();
 //Express.js
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 //Database 
-const mongoose = require('mongoose')
-const connectDB = require('./config/db')
+const connectDB = require('./config/db');
 //Database connection
 connectDB();
-//Model
-const Product = require('./models/ProductModel')
 //Routes
-const apiRoutes = require("./routes/apiRoutes")
+const apiRoutes = require("./routes/apiRoutes");
 //Express file upload
-const fileUpload = require("express-fileupload")
+const fileUpload = require("express-fileupload");
+//Cookie
+const cookieParser = require("cookie-parser");
 
-app.use(fileUpload())
-
+app.use(fileUpload());
+app.use(cookieParser());
 app.use(express.json());
 
 app.use("/api", apiRoutes);

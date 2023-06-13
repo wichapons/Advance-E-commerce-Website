@@ -27,8 +27,7 @@ const registerUser = async (req, res, next) => {
       if (userExists) {
         return res.status(400).send({ error: "user already existed" });
       } else {
-
-        const hashedPassword =  hashPassword(password)
+        const hashedPassword =  hashPassword(password);
         //create new user
         const user = await User.create({
           name,
@@ -69,7 +68,6 @@ const registerUser = async (req, res, next) => {
         if (doNotLogout) {
           cookieParams = { ...cookieParams, maxAge: 1000 * 60 * 60 * 24 * 7 }; // 1000=1ms
         }
-
         return res.cookie(
           "access_token",
           generateAuthToken(
