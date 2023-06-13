@@ -27,7 +27,7 @@ app.use((error, req, res, next) => {
     message: error.message
   };
   //send the detailed error when in dev mode ONLY
-  if (process.env.SERVER_MODE === 'dev'){
+  if (process.env.NODE_ENV === 'dev'){
     response.stack = error.stack;
   }
   //console.log(error);
