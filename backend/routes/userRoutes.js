@@ -15,6 +15,8 @@ router.post('/review/:productId', userController.createReview)
 // admin routes:
 router.use(verifyAuthToken.verifyIsAdmin);
 router.get("/", userController.getUsers);
-
+router.get("/:id", userController.getUserById);
+router.put('/:id', userController.updateUserById)
+router.delete('/:id', userController.deleteUserById)
 
 module.exports = router
