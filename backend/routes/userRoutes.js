@@ -9,10 +9,12 @@ router.post("/login", userController.loginUser)
 // user routes:
 router.use(verifyAuthToken.verifyIsLoggedIn);
 router.put("/profile", userController.updateUserProfile);
+router.get('/profile/:id', userController.getUserProfile)
+router.post('/review/:productId', userController.createReview)
 
 // admin routes:
 router.use(verifyAuthToken.verifyIsAdmin);
-router.get("/", userController.getUsers)
+router.get("/", userController.getUsers);
 
 
 module.exports = router
