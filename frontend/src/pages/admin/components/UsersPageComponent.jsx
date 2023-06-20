@@ -12,14 +12,16 @@ const UsersPageComponent = ({fetchUsersData}) => { //passing fetchUsersData to p
   };
 
   useEffect(() => {
-    const abortController = new AbortController();  //Canceling a fetch request
+    const abortController = new AbortController();  //create abort controller
     fetchUsersData(abortController).then(res => setUsers(res))
-    .catch((err) =>
-      console.log(
-        err.response.data.message ? err.response.data.message : err.response.data
-      )
-    );
-  return () => abortController.abort();//cleanup callback after completed render or user change page after loading to prevent memory leakage
+    .catch(err => {
+      if (err.response && err.response.data && err.response.data.message) {
+        console.log(err.response.data.message);
+      } else {
+        console.log(err.response.data);
+      }
+    });
+  return () => {abortController.abort()} //cleanup callback after completed render or user change page after loading to prevent memory leakage
 }, []);
 
 
@@ -42,7 +44,7 @@ return (
           </tr>
         </thead>
         <tbody>
-          {users.map(
+          {users.map( // map user from database to each table
             (user, idx) => (
               <tr key={idx}>
                 <td>{idx + 1}</td>
