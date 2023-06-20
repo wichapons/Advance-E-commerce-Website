@@ -5,7 +5,14 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "server-prod": "node server.js",
+    "server-dev": "nodemon server.js",
+    "client": "npm run dev --prefix ../frontend",
+    "dev": "concurrently \"npm run server-dev\" \"npm run client\"",
+    "seed:data": "node seeder/seeder",
+    "seed:data-d": "node seeder/seeder -d"
+
   },
   "repository": {
     "type": "git",
@@ -32,6 +39,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.0",
     "nodemon": "^2.0.22"
   }
 }
