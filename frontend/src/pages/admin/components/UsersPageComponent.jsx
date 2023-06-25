@@ -10,8 +10,8 @@ const UsersPageComponent = ({fetchUsersData,deleteUser}) => { //passing fetchUse
 
   const deleteHandler = async (userId) => {
     if (window.confirm("Are you sure?")) {
-        const data  = await deleteUser(userId);
-        if(data === 'user removed') {
+        const response  = await deleteUser(userId);
+        if(response.status = 200) {
             setUserDeleted(!userDeleted)
         }
     }
