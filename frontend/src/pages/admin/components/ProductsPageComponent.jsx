@@ -12,7 +12,6 @@ const ProductsPageComponent = ({ fetchProducts,deleteProduct }) => {
         const response = await deleteProduct(productId)
         if (response.status = 200) {
             setProductDeleted(!productDeleted);
-            console.log(productDeleted)
         }
     }
   };

@@ -3,7 +3,6 @@ import axios from "axios";
 
 const getOrders = async() => {
     const response = await axios.get("/api/orders/admin");
-    console.log(response);
     return response.data
 }
 
