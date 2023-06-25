@@ -40,10 +40,10 @@ const OrdersPageComponent = ({ getOrders }) => {
               <tr key={idx}>
                 <td>{idx + 1}</td>
                 {order.user !== null ? (
-                  <>
-                    {user.order.name} {user.order.lastName}
-                  </>
-                ) : <>cannot fetch name</>}
+                  <td>
+                    {order.user.name} {order.user.lastName}
+                  </td>
+                ) : <td>cannot fetch name</td>}
                 <td>{order.createdAt.substring(0,10)}</td>
                 <td>{order.totalOrder.cartSubtotal}</td>
                 <td>
