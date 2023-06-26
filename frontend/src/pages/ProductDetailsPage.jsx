@@ -3,8 +3,19 @@ import { Rating } from "react-simple-star-rating";
 import AddedToCartMessageComponent from "../components/AddedToCartMessageComponent";
 import ImageZoom from "js-image-zoom";
 import { useEffect } from "react";
+import { useDispatch,useSelector } from "react-redux";
+import { addToCart } from "../redux/actions/cartActions";
 
 const ProductDetailsPage = () => {
+
+  const dispatch = useDispatch()
+
+  const addToCartHandler = () => {
+      dispatch(addToCart());
+  }
+  //read current value from redux
+  const products = useSelector((state) => state.cart.value);
+
   //require to set options for js-zoom-image
   const options = {
     scale: 2,
@@ -92,7 +103,7 @@ window.onload = runImageZoomAfterPageLoad;
                   </Form.Select>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Button variant="danger">Add to cart</Button>
+                  <Button onClick={()=>{addToCartHandler()}} variant="danger">Add to cart</Button>
                 </ListGroup.Item>
                 <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
               </ListGroup>
