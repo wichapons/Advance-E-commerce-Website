@@ -33,6 +33,7 @@
 
 #checkbox:checked ~ .chat-wrapper {
   opacity: 1;
+  z-index: 2;
 }
 
 .chat-wrapper {
@@ -40,7 +41,7 @@
   position: fixed;
   right: 20px;
   bottom: 70px;
-  z-index: 2;
+  z-index: -1;
   width: 300px;
   transition: all 0.4s;
   background-color: #fff;
