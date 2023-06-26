@@ -1,9 +1,17 @@
-import { Col, Row, Container, Form, Alert, ListGroup, Button } from "react-bootstrap";
+import {
+  Col,
+  Row,
+  Container,
+  Form,
+  Alert,
+  ListGroup,
+  Button,
+} from "react-bootstrap";
 import CartItemComponent from "../../../components/CartItemComponent";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-const OrderDetailsPageComponent = ({ getOrder }) => {
+const OrderDetailsPageComponent = ({ getOrder, markAsDelivered }) => {
   const params = useParams();
   const id = params.id; // already defined in app.jsx
   const [userInfo, setUserInfo] = useState({});
@@ -12,7 +20,8 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
   const [isDelivered, setIsDelivered] = useState(false);
   const [cartSubtotal, setCartSubtotal] = useState(0);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [orderButtonMessage, setOrderButtonMessage] = useState('Mark as delivered');
+  const [orderButtonMessage, setOrderButtonMessage] =
+    useState("Mark as delivered");
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
@@ -22,10 +31,12 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
         setUserInfo(order.user);
         // set payment method
         setPaymentMethod(order.paymentMethod);
-        // set product payment status   
+        // set product payment status
         order.isPaid ? setIsPaid(order.paidAt) : setIsPaid(false);
         // set product delivery status
-        order.isDelivered ? setIsDelivered(order.deliveredAt) : setIsDelivered(false);
+        order.isDelivered
+          ? setIsDelivered(order.deliveredAt)
+          : setIsDelivered(false);
         // set total price
         setCartSubtotal(order.totalOrder.cartSubtotal);
         // if product is delivered disable the button
@@ -37,14 +48,14 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.message) {
-            console.log(err.response.data.message);
-          } else if (err.response && err.response.data) {
-            console.log(err.response.data);
-          } else {
-            console.log(err);
-          }
+          console.log(err.response.data.message);
+        } else if (err.response && err.response.data) {
+          console.log(err.response.data);
+        } else {
+          console.log(err);
+        }
       });
-  }, [isDelivered, id,isPaid]); // useEffect will be activated when isDelivered or id is changed
+  }, [isDelivered, id, isPaid]); // useEffect will be activated when isDelivered or id is changed
 
   return (
     <Container fluid>
@@ -56,20 +67,30 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
             <Col md={6}>
               <h2>Shipping</h2>
               <b>Name</b>: {userInfo.name} {userInfo.lastName} <br />
-              <b>Address</b>: {userInfo.address} {userInfo.city} {userInfo.state} {userInfo.zipCode} <br />
+              <b>Address</b>: {userInfo.address} {userInfo.city}{" "}
+              {userInfo.state} {userInfo.zipCode} <br />
               <b>Phone</b>: {userInfo.phoneNumber}
             </Col>
             <Col md={6}>
               <h2>Payment method</h2>
               <Form.Select value={paymentMethod} disabled={true}>
                 <option value="pp">PayPal</option>
-                <option value="cod">Cash On Delivery (delivery may be delayed)</option>
+                <option value="cod">
+                  Cash On Delivery (delivery may be delayed)
+                </option>
               </Form.Select>
             </Col>
             <Row>
               <Col>
-                <Alert className="mt-3" variant={isDelivered ? "success" : "danger"}>
-                  {isDelivered ? <>Delivered at {isDelivered}</> : <>Not delivered</>}
+                <Alert
+                  className="mt-3"
+                  variant={isDelivered ? "success" : "danger"}
+                >
+                  {isDelivered ? (
+                    <>Delivered at {isDelivered}</>
+                  ) : (
+                    <>Not delivered</>
+                  )}
                 </Alert>
               </Col>
               <Col>
@@ -93,7 +114,8 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
               <h3>Order summary</h3>
             </ListGroup.Item>
             <ListGroup.Item>
-              Items price (after tax): <span className="fw-bold">${cartSubtotal}</span>
+              Items price (after tax):{" "}
+              <span className="fw-bold">${cartSubtotal}</span>
             </ListGroup.Item>
             <ListGroup.Item>
               Shipping: <span className="fw-bold">included</span>
@@ -105,8 +127,19 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
               Total price: <span className="fw-bold">${cartSubtotal}</span>
             </ListGroup.Item>
             <ListGroup.Item>
+              {/* Mark Delivered Button */}
               <div className="d-grid gap-2">
-                <Button size="lg" disabled={buttonDisabled} variant="danger" type="button">
+                <Button
+                  size="lg"
+                  disabled={buttonDisabled}
+                  variant="danger"
+                  type="button"
+                  onClick={() =>
+                    markAsDelivered(id).then((res) => {
+                      setIsDelivered(true);
+                    })
+                  }
+                >
                   {orderButtonMessage}
                 </Button>
               </div>
