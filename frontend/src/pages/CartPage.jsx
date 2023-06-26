@@ -11,12 +11,10 @@ const CartPage = () => {
         <Col md={8} >
           <h1>Shopping Cart</h1>
           <ListGroup variant="flush">
-          {Array.from({ length: 3 }).map((item,idx) => (
-            <React.Fragment key={idx}> 
-              <CartItemComponent />
-              <br></br>
-            </React.Fragment>
-          ))}
+          {Array.from({ length: 3 }).map((item, idx) => (
+              <CartItemComponent item={{image: {path:"/images/tablets-category.png"}, name: "Product name", price:10, count:10, quantity:10}} key={idx} />
+            ))}
+
           </ListGroup>
           
           <Alert variant="info">Your cart is empty</Alert>
