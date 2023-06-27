@@ -1,7 +1,8 @@
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import Spinner from 'react-bootstrap/Spinner'
+import { Link,useNavigate } from "react-router-dom";
+import Spinner from 'react-bootstrap/Spinner';
+
 
 const LoginPageComponent = ({loginUserApiRequest}) => {
   const [validated, setValidated] = useState(false);
@@ -10,6 +11,8 @@ const LoginPageComponent = ({loginUserApiRequest}) => {
     error: "",
     loading: false,
   });
+
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -25,8 +28,14 @@ const LoginPageComponent = ({loginUserApiRequest}) => {
       setLoginUserResponseState({ loading: true });
       loginUserApiRequest(email, password, doNotLogout)
       .then((res) => {
-        console.log(res);
         setLoginUserResponseState({ success: res.success, loading: false, error: "" });
+        //redirect after login successfully
+        if (res.success === "user logged in" && !res.userLoggedIn.isAdmin) {
+          //if not admin redirect to user
+          navigate("/user", { replace: true }) //delete current url eg. shop/login after login success if user go back it will redirect to shop/
+        }
+          //if admin navigate to admin page
+        else navigate("/admin/orders", { replace: true });
       })
       .catch((err) => {
         setLoginUserResponseState({ error: err.response.data.message ? err.response.data.message : err.response.data })
