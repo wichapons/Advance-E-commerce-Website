@@ -73,7 +73,11 @@ const loginUser = async (req, res, next) => {
       return res.status(400).send("All inputs are required");
     }
     email = email.toLowerCase(); //change email to lower case
+
     const user = await User.findOne({ email }).orFail();
+    if(!user){
+      return res.status(401).send("wrong credentials");
+    }
     if (user && await comparePasswords(password, user.password) === true) {
       if (doNotLogout) {
         cookieParams = { ...cookieParams, maxAge: 1000 * 60 * 60 * 24 * 7 }; // 1000=1ms
@@ -105,6 +109,9 @@ const loginUser = async (req, res, next) => {
       return res.status(401).send("wrong credentials");
     }
   } catch (err) {
+    if(err.message.includes("No document found for query")){
+      return res.status(401).send("wrong credentials");
+    }
     next(err);
   }
 };
