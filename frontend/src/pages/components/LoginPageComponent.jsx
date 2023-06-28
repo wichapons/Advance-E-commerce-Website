@@ -4,7 +4,7 @@ import { Link,useNavigate } from "react-router-dom";
 import Spinner from 'react-bootstrap/Spinner';
 
 
-const LoginPageComponent = ({loginUserApiRequest}) => {
+const LoginPageComponent = ({loginUserApiRequest,reduxDispatch, setReduxUserState }) => {
   const [validated, setValidated] = useState(false);
   const [loginUserResponseState, setLoginUserResponseState] = useState({
     success: "",
@@ -28,7 +28,12 @@ const LoginPageComponent = ({loginUserApiRequest}) => {
       setLoginUserResponseState({ loading: true });
       loginUserApiRequest(email, password, doNotLogout)
       .then((res) => {
+        //set state 
         setLoginUserResponseState({ success: res.success, loading: false, error: "" });
+        
+        if (res.userLoggedIn) {
+          reduxDispatch(setReduxUserState(res.userLoggedIn));
+      }
         //redirect after login successfully
         if (res.success === "user logged in" && !res.userLoggedIn.isAdmin) {
           //if not admin redirect to user
@@ -38,6 +43,7 @@ const LoginPageComponent = ({loginUserApiRequest}) => {
         else navigate("/admin/orders", { replace: true });
       })
       .catch((err) => {
+        console.log(err);
         setLoginUserResponseState({ error: err.response.data.message ? err.response.data.message : err.response.data })
       });
   }
