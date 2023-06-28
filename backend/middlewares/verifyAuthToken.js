@@ -1,13 +1,10 @@
 const jwt = require("jsonwebtoken")
 const verifyIsLoggedIn = (req, res, next) => {
     try {
-        next()
-        return // to do: remove later
         const token = req.cookies.access_token; //jwt token saved in cookie will contains _id, name, lastName, email, isAdmin 
         if(!token) {
            return res.status(403).send("A token is required for authentication");
         }
-
         try {
            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
             req.user = decoded;  //_id, name, lastName, email, isAdmin 
@@ -22,8 +19,6 @@ const verifyIsLoggedIn = (req, res, next) => {
 }
 
 const verifyIsAdmin = (req, res, next) => {
-    next()
-    return // to do: remove later
     if(req.user && req.user.isAdmin) {
         next();
     } else {
