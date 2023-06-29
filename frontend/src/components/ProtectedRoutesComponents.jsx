@@ -10,11 +10,10 @@ const ProtectedRoutesComponents = ({ admin }) => {
 
     useEffect(() => {
     axios.get("/api/get-token").then(function (res) {
-        console.log('res',res.data.token);
+
       if (res.data.token) {
         setIsAuth(res.data.token);
         }
-        console.log('isauth ',isAuth);
         return isAuth;
     });
     }, [isAuth]);
