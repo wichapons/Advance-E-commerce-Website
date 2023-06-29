@@ -49,7 +49,7 @@ const RegistrationPage = () => {
 
 const RegistrationPageComponent = ({ registerUserApiRequest }) => {
   const [validated, setValidated] = useState(false);
-
+  
   //check password match for confirmed password input
   const checkIsPasswordMatch = () => {
     const password = document.querySelector("input[name=password]");
@@ -84,10 +84,11 @@ const RegistrationPageComponent = ({ registerUserApiRequest }) => {
         registerUserApiRequest(name, lastName, email, password)
         .then((res) => console.log(res))
         .catch((er) => console.log({ error: er.response.data.message ? er.response.data.message : er.response.data }));
-    }};
+        setValidated(true);
+      }};
 
-    setValidated(true);
-  };
+    
+  
   
 
   return (
@@ -195,6 +196,6 @@ const RegistrationPageComponent = ({ registerUserApiRequest }) => {
       </Row>
     </Container>
   );
-
+};
 
 export default RegistrationPageComponent;
