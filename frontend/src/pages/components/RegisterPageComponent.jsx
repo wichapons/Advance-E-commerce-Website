@@ -1,5 +1,5 @@
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
 
@@ -47,8 +47,13 @@ const RegistrationPage = () => {
     }
 */
 
-const RegistrationPageComponent = ({ registerUserApiRequest }) => {
+const RegistrationPageComponent = ({ registerUserApiRequest,reduxDispatch, setReduxUserState }) => {
   const [validated, setValidated] = useState(false);
+  const [registerUserResponseState, setRegisterUserResponseState] = useState({
+    success: "",
+    error: "",
+    loading: false,
+  });
   
   //check password match for confirmed password input
   const checkIsPasswordMatch = () => {
@@ -73,6 +78,7 @@ const RegistrationPageComponent = ({ registerUserApiRequest }) => {
   };
 
   const handleSubmit = (event) => {
+    setRegisterUserResponseState({loading:true});
     event.preventDefault();
     const form = event.currentTarget;
     const formElement = event.currentTarget.elements;
@@ -80,16 +86,25 @@ const RegistrationPageComponent = ({ registerUserApiRequest }) => {
     const name = formElement.name.value;
     const lastName = formElement.lastName.value;
     const password = formElement.password.value;
-    if (form.checkValidity() === true && email && password && name && lastName) {
+    const confirmPassword = formElement.confirmPassword.value
+
+    if (form.checkValidity() === true && email && password && name && lastName && confirmPassword && password===confirmPassword) {
         registerUserApiRequest(name, lastName, email, password)
-        .then((res) => console.log(res))
-        .catch((er) => console.log({ error: er.response.data.message ? er.response.data.message : er.response.data }));
+        .then((res) => {
+          setRegisterUserResponseState({success:res.success, loading:false});
+          reduxDispatch(setReduxUserState(res.userCreated)); // set redux initial value from response
+          sessionStorage.setItem("userInfo", JSON.stringify(res.userCreated)); //convert object from response to JSON
+          if (res.success === "User created"){
+            console.log("redirect to /user");
+            window.location.href = "/user";
+          }
+        })
+        .catch((er) => {
+          console.log(er);
+          setRegisterUserResponseState({error: er.response.data.error, loading:false});
+        });
         setValidated(true);
       }};
-
-    
-  
-  
 
   return (
     <Container>
@@ -176,21 +191,28 @@ const RegistrationPageComponent = ({ registerUserApiRequest }) => {
             </Row>
 
             <Button type="submit">
-              <Spinner
+            {(registerUserResponseState.loading === true)?
+                (<Spinner
                 as="span"
                 animation="border"
                 size="sm"
                 role="status"
                 aria-hidden="true"
-              />
+              />):""
+            }
               Submit
             </Button>
-            <Alert show={true} variant="danger">
+
+            {registerUserResponseState.error === "user already existed" ? 
+            (<Alert show={true} variant="danger">
               User with that email already exists!
-            </Alert>
-            <Alert show={true} variant="info">
+            </Alert>):""
+            }
+
+            {registerUserResponseState.success ? (<Alert show={true} variant="info">
               User created
-            </Alert>
+            </Alert>):""
+            }
           </Form>
         </Col>
       </Row>
