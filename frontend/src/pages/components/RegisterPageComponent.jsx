@@ -54,15 +54,24 @@ const RegistrationPageComponent = ({ registerUserApiRequest,reduxDispatch, setRe
     error: "",
     loading: false,
   });
+  //state for checking password validation
+  const [passwordsMatchState, setPasswordsMatchState] = useState(true);
+  const [confirmPasswordsMatchState, setconfirmPasswordsMatchState] = useState(true);
   
   //check password match for confirmed password input
   const checkIsPasswordMatch = () => {
     const password = document.querySelector("input[name=password]");
     const confirm = document.querySelector("input[name=confirmPassword]");
+    //password logic
+    if(password.value.length>=6){
+      setPasswordsMatchState(true);
+    }else{
+      setPasswordsMatchState(false)
+    }
     if (confirm.value === password.value) {
-      confirm.setCustomValidity("");
+      setconfirmPasswordsMatchState(true);
     } else {
-      confirm.setCustomValidity("Passwords do not match");
+      setconfirmPasswordsMatchState(false);
     }
   };
 
@@ -93,11 +102,6 @@ const RegistrationPageComponent = ({ registerUserApiRequest,reduxDispatch, setRe
         .then((res) => {
           setRegisterUserResponseState({success:res.success, loading:false});
           reduxDispatch(setReduxUserState(res.userCreated)); // set redux initial value from response
-          sessionStorage.setItem("userInfo", JSON.stringify(res.userCreated)); //convert object from response to JSON
-          if (res.success === "User created"){
-            console.log("redirect to /user");
-            window.location.href = "/user";
-          }
         })
         .catch((er) => {
           console.log(er);
@@ -159,16 +163,19 @@ const RegistrationPageComponent = ({ registerUserApiRequest,reduxDispatch, setRe
                 placeholder="Password"
                 minLength={6}
                 onChange={checkIsPasswordMatch}
+                isInvalid={!passwordsMatchState}
+                isValid={passwordsMatchState}
+                autoComplete="off"
               />
               <Form.Control.Feedback type="invalid">
                 Please anter a valid password
               </Form.Control.Feedback>
-              <Form.Text className="text-muted">
+              <Form.Text className="text-muted" >
                 Password should have at least 6 characters
               </Form.Text>
             </Form.Group>
             {/* Password confirmation input */}
-            <Form.Group className="mb-3" controlId="formBasicPasswordRepeat">
+            <Form.Group className="mb-3" controlId="formBasicPasswordRepeat" >
               <Form.Label>Repeat Password</Form.Label>
               <Form.Control
                 name="confirmPassword"
@@ -177,6 +184,9 @@ const RegistrationPageComponent = ({ registerUserApiRequest,reduxDispatch, setRe
                 placeholder="Repeat Password"
                 minLength={6}
                 onChange={checkIsPasswordMatch}
+                isInvalid={!confirmPasswordsMatchState}
+                isValid={confirmPasswordsMatchState}
+                autoComplete="off"
               />
               <Form.Control.Feedback type="invalid">
                 Both passwords should match
