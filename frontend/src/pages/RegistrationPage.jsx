@@ -5,8 +5,8 @@ import { setReduxUserState } from "../redux/actions/userActions";
 
 const registerUserApiRequest = async (name, lastName, email, password) => {
     const response = await axios.post("/api/users/register", { name, lastName, email, password });
-    sessionStorage.setItem("userInfo", JSON.stringify(res.userCreated)); //convert object from response to JSON
-      if (res.success === "User created"){
+    sessionStorage.setItem("userInfo", JSON.stringify(response.userCreated)); //convert object from response to JSON
+      if (response.success === "User created"){
         window.location.href = "/user"; //redirect to /user 
       }
     return response.data;

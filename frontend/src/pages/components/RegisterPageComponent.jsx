@@ -98,17 +98,21 @@ const RegistrationPageComponent = ({ registerUserApiRequest,reduxDispatch, setRe
     const confirmPassword = formElement.confirmPassword.value
 
     if (form.checkValidity() === true && email && password && name && lastName && confirmPassword && password===confirmPassword) {
-        registerUserApiRequest(name, lastName, email, password)
+        registerUserApiRequest(name, lastName, email, password) // get api request from back end
         .then((res) => {
           setRegisterUserResponseState({success:res.success, loading:false});
           reduxDispatch(setReduxUserState(res.userCreated)); // set redux initial value from response
         })
         .catch((er) => {
           console.log(er);
+          setRegisterUserResponseState({loading:false});
           setRegisterUserResponseState({error: er.response.data.error, loading:false});
         });
         setValidated(true);
-      }};
+      }else{
+        setRegisterUserResponseState({loading:false});
+      }
+    };
 
   return (
     <Container>
