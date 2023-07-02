@@ -22,6 +22,7 @@ app.use("/api", apiRoutes);
 
 //Error handling
 app.use((error, req, res, next) => {
+  console.log(error);
   const response = {
     message: error.message
   };

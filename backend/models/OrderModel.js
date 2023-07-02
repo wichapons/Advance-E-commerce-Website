@@ -7,7 +7,7 @@ const orderSchema = mongoose.Schema({
         required: true,
         ref: User
     },
-    totalOrder: {
+    orderTotal: {
         itemsCount: {type: Number, required: true},
         cartSubtotal: {type: Number, required: true}
     },

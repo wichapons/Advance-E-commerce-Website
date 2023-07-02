@@ -1,4 +1,5 @@
 const Order = require("../models/OrderModel");
+const Product = require("../models/ProductModel");
 const ObjectId = require("mongodb").ObjectId;
 
 const getUserOrders = async (req, res, next) => {
