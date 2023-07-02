@@ -10,11 +10,13 @@ import { useParams } from "react-router-dom";
 const ProductDetailsPageComponent = ({addToCartReduxAction, reduxDispatch}) => {  
   const getParams = useParams();
   const id = getParams.id; 
+  const [showCartMessage, setShowCartMessage] = useState(false);
   //set number of avilable items 
   const [quantity, setQuantity] = useState(1);
   //add dispatch redux to update amount of item added to cart
   const addToCartHandler = () => {
       reduxDispatch(addToCartReduxAction(id, quantity));
+      setShowCartMessage(true);
   }
 
   //require to set options for js-zoom-image
@@ -22,17 +24,6 @@ const ProductDetailsPageComponent = ({addToCartReduxAction, reduxDispatch}) => {
     scale: 2,
     offset: { vertical: 0, horizontal: 10 },
   };
-
-  /* Without useEffect can use this code below
-const runImageZoomAfterPageLoad = () => {
-  new ImageZoom(document.querySelector(".first"), options);
-  new ImageZoom(document.querySelector(".second"), options);
-  new ImageZoom(document.querySelector(".third"), options);
-  new ImageZoom(document.querySelector(".forth"), options);
-};
-
-window.onload = runImageZoomAfterPageLoad;
-*/
 
   //use useEffect for execute these command after the whole page is loaded
   useEffect(() => {
@@ -45,7 +36,7 @@ window.onload = runImageZoomAfterPageLoad;
 
   return (
     <Container>
-      <AddedToCartMessageComponent />
+      <AddedToCartMessageComponent showCartMessage={showCartMessage} setShowCartMessage={setShowCartMessage}/>
       <Row className="mt-5">
         {/* Left column for display images */}
         <Col style={{ zIndex: "1" }} md={4}>

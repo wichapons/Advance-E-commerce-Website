@@ -18,7 +18,9 @@ const HeaderComponent = () => {
   const dispatch = useDispatch();
   //get userInfo from current redux state
   const { userInfo } = useSelector((state) => state.userRegisterLogin);
-  console.log(userInfo);
+  const itemsCount = useSelector((state) => state.cart.itemsCount);
+
+
 
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -83,7 +85,7 @@ const HeaderComponent = () => {
             )}
             <Nav.Link href="/cart">
               <Badge pill bg="danger">
-                1
+              {itemsCount === 0 ? "" : itemsCount}
               </Badge>
               <i className="bi bi-cart"></i>
               Cart
