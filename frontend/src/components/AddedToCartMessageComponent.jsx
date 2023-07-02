@@ -14,7 +14,6 @@ const AddedToCartMessageComponent = ({showCartMessage,setShowCartMessage}) => {
       onClose={() => setShowCartMessage(false)}
       dismissible
     >
-      <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
       <p>The product has been added to cart successfully.</p>
       <Link to="/cart">
         <Button className="me-2" variant="success" onClick={goBack}>Back to homepage</Button>
