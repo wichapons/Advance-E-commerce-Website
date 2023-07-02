@@ -1,7 +1,16 @@
 import {Container,Row,Col,Form,Alert,ListGroup,Button} from "react-bootstrap";
 import CartItemComponent from "../../../components/CartItemComponent";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal,addToCart, removeFromCart, reduxDispatch,getUser,userInfo={userInfo}}) => {
+const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal,addToCart, removeFromCart, reduxDispatch,getUser,userInfo={userInfo},createOrder}) => {
+    const [buttonDisabled, setButtonDisabled] = useState(false);
+    const [userAddress, setUserAddress] = useState(false);
+    const [missingAddress, setMissingAddress] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState("pp");
+
+    const navigate = useNavigate();
+
     const changeCount = (productID, count) => {
         reduxDispatch(addToCart(productID, count));
     }
@@ -11,8 +20,53 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal,addTo
             reduxDispatch(removeFromCart(productID, quantity, price));
         }
     }
-    
-    getUser().then(res => console.log(res))
+    console.log('itemsCount: ',itemsCount);
+    const orderHandler = () => {
+        const orderData = {
+            orderTotal: {
+               itemsCount: itemsCount, 
+               cartSubtotal: cartSubtotal,
+            },
+            cartItems: cartItems.map(item => {
+                return {
+                    productID: item.productID,
+                    name: item.name,
+                    price: item.price,
+                    image: { path: item.image ? (item.image.path ?? null) : null },
+                    quantity: item.quantity,
+                    count: item.count,
+                }
+            }),
+            paymentMethod: paymentMethod,
+        }
+        //send update order to db
+        createOrder(orderData)
+        .then(data => {
+            if (data) {
+                navigate("/user/order-details/" + data._id);
+            }
+        })
+        .catch((err) => console.log(err));
+     }
+
+     const choosePayment = (e) => {
+        setPaymentMethod(e.target.value);
+    }
+
+    //check if all delivery data is filled then enable/disable payment button
+    useEffect(() => {
+        getUser() //fetch data from db via axios
+        .then((data) => {
+            if (!data.address || !data.city || !data.country || !data.zipCode || !data.state || !data.phoneNumber) {
+                setButtonDisabled(true);
+                setMissingAddress(" In order to make order, fill out your profile with correct address, city etc.");
+            } else {
+                setUserAddress({address: data.address, city: data.city, country: data.country, zipCode: data.zipCode, state: data.state, phoneNumber: data.phoneNumber})
+                setMissingAddress(false);
+            }
+        })
+        .catch((er) => console.log(er.response.data.message ? er.response.data.message : er.response.data));
+    }, [userInfo._id])
   
     return (
     <Container fluid>
@@ -29,7 +83,7 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal,addTo
             </Col>
             <Col md={6}>
               <h2>Payment method</h2>
-              <Form.Select>
+              <Form.Select onChange={choosePayment}>
                 <option value="pp">PayPal</option>
                 <option value="cod">
                   Cash On Delivery (delivery may be delayed)
@@ -39,7 +93,8 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal,addTo
             <Row>
               <Col>
                 <Alert className="mt-3" variant="danger">
-                  Not delivered. In order to make order, fill out your profile with correct address, city etc.
+                  Not delivered.
+                  {missingAddress}
                 </Alert>
               </Col>
               <Col>
@@ -76,8 +131,8 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal,addTo
             </ListGroup.Item>
             <ListGroup.Item>
               <div className="d-grid gap-2">
-                <Button size="lg" variant="danger" type="button">
-                  Pay for the order
+                <Button size="lg" variant="danger" type="button"  disabled={buttonDisabled} onClick={orderHandler}> 
+                  Place order
                 </Button>
               </div>
             </ListGroup.Item>
