@@ -1,7 +1,7 @@
 import * as actionTypes from "../constants/cartConstants";
 import axios from 'axios';
 
-export const addToCart = (productId, quantity) => async (dispatch) => {
+export const addToCart = (productId, quantity) => async (dispatch,getState) => {
      // Send an HTTP GET request to retrieve product information based on the provided productId
     const { data } = await axios.get(`/api/products/get-one/${productId}`);
 
@@ -18,4 +18,6 @@ export const addToCart = (productId, quantity) => async (dispatch) => {
             quantity,
         },
     })
+    //save cart item state to local storage
+    localStorage.setItem("cart", JSON.stringify(getState().cart.cartItems));
 }

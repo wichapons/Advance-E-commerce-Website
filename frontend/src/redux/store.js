@@ -8,7 +8,12 @@ import { userRegisterLoginReducer } from './reducers/userReducers';
 const reducer = combineReducers({
     cart: cartReducer ,
     userRegisterLogin: userRegisterLoginReducer 
-})
+});
+
+//get cart item state from local storage
+const cartItemsInLocalStorage = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];
+
+
 
 const userInfoInLocalStorage = localStorage.getItem("userInfo")
 ? JSON.parse(localStorage.getItem("userInfo"))
@@ -19,9 +24,9 @@ const userInfoInLocalStorage = localStorage.getItem("userInfo")
 const INITIAL_STATE = {
     cart: {
         //define default state for cart
-        cartItems: [],
-        itemsCount: 0,
-        cartSubtotal: 0
+        cartItems: cartItemsInLocalStorage,
+        itemsCount: cartItemsInLocalStorage ? cartItemsInLocalStorage.reduce((accumulator, item) => Number(item.quantity) + accumulator, 0):0,
+        cartSubtotal:  cartItemsInLocalStorage ? cartItemsInLocalStorage.reduce((accumulator, item) => accumulator + item.price * item.quantity, 0) : 0
     },
     userRegisterLogin: { userInfo: userInfoInLocalStorage }
 }
