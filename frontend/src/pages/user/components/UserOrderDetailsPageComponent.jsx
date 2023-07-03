@@ -1,9 +1,11 @@
 import {Container,Row,Col,Form,Alert,ListGroup,Button,} from "react-bootstrap";
 import CartItemComponent from "../../../components/CartItemComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef  } from "react";
 import { useParams } from "react-router-dom";
 
-const UserOrderDetailsPageComponent = ({ userInfo, getUser,getOrder }) => {
+
+const UserOrderDetailsPageComponent = ({ userInfo, getUser,getOrder,loadPayPalScript }) => {
+    // State variables
     const [userAddress, setUserAddress] = useState({});
     const [paymentMethod, setPaymentMethod] = useState("");
     const [isPaid, setIsPaid] = useState(false);
@@ -12,7 +14,9 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser,getOrder }) => {
     const [cartSubtotal, setCartSubtotal] = useState(0);
     const [isDelivered, setIsDelivered] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
-
+    // Ref for PayPal container element
+    const paypalContainer = useRef();
+    // Get order ID from URL params
     const { id } = useParams();
 
     //fetch user data when page is loaded
@@ -29,11 +33,13 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser,getOrder }) => {
     useEffect(() => {
         getOrder(id) 
         .then(data => {
+          // Set order details in state variables
             setPaymentMethod(data.paymentMethod);
             setCartItems(data.cartItems);
             setCartSubtotal(data.orderTotal.cartSubtotal);
             data.isDelivered ? setIsDelivered(data.deliveredAt) : setIsDelivered(false);
             data.isPaid ? setIsPaid(data.paidAt) : setIsPaid(false);
+            // Set order button message and disabled state based on payment and delivery status
             if (data.isPaid) {
                 setOrderButtonMessage("Your order is finished");
                 setButtonDisabled(true);
@@ -55,12 +61,21 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser,getOrder }) => {
         if (paymentMethod === "pp") {
             setOrderButtonMessage("To pay for your order click one of the buttons below");
             if (!isPaid) {
-                // to do: load PayPal script and do actions
+              //pass data to loadPayPalScript
+              loadPayPalScript(cartSubtotal, cartItems,id,updateStateAfterOrder)
             }
         } else {
             setOrderButtonMessage("Your order was placed. Thank you");
         }
     }
+
+    // Update state after the order is placed and paid
+    const updateStateAfterOrder = (paidAt) => {
+      setOrderButtonMessage("Thank you for your payment!");
+      setIsPaid(paidAt);
+      setButtonDisabled(true);
+      paypalContainer.current.style = "display: none";
+  }
 
   return (
     <Container fluid>
@@ -126,9 +141,12 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser,getOrder }) => {
             </ListGroup.Item>
             <ListGroup.Item>
               <div className="d-grid gap-2">
-                <Button size="lg" onClick={orderHandler} variant="danger" type="button" disabled={buttonDisabled}>
+                <Button size="md" onClick={orderHandler} variant="danger" type="button" disabled={buttonDisabled}>
                 {orderButtonMessage}
                 </Button>
+              </div>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div ref={paypalContainer} id="paypal-container-element"></div>
               </div>
             </ListGroup.Item>
           </ListGroup>
