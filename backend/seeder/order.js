@@ -15,7 +15,7 @@ const orders = Array.from({length: 22}).map((_, idx) => {
     }
     return {
         user: new ObjectId("625add3d78fb449f9d9fe2ee"),//generate object ID
-        totalOrder: {
+        orderTotal: {
             itemsCount: 3,
             cartSubtotal: subtotal
         },
