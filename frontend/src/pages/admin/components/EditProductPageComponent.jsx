@@ -160,43 +160,52 @@ const AdminEditProductPageComponent = ({
   };
 
   // This function is triggered when an attribute value is selected
-const attributeValueSelected = (e) => {
-  // Check if the selected value is not the default "Choose attribute value"
-  if (e.target.value !== "Choose attribute value") {
-    // Call the function to update the attributes table with the selected attribute key and value
-    setAttributesTableWrapper(attrKey.current.value, e.target.value);
-  }
-};
-
-// This function updates the attributes table with the selected attribute key and value
-//SHOW ATTRIBUTE KEY AND VALUE TO THE TABLE 
-const setAttributesTableWrapper = (key, val) => {
-  // Update the attributes table state using the previous state
-  setAttributesTable((attr) => {
-    if (attr.length !== 0) {
-      let keyExistsInOldTable = false;
-      // Iterate over the existing attributes table to find and modify the matching key
-      let modifiedTable = attr.map((item) => {
-        if (item.key === key) {
-          keyExistsInOldTable = true;
-          // Update the value of the matching key with the new selected value
-          item.value = val;
-          return item;
-        } else {
-          return item;
-        }
-      });
-      // If the key existed in the old table, return the modified table
-      if (keyExistsInOldTable) return [...modifiedTable];
-      // If the key is new, add a new entry to the table with the selected key and value
-      else return [...modifiedTable, { key: key, value: val }];
-    } else {
-      // If the table was empty, create a new entry with the selected key and value
-      return [{ key: key, value: val }];
+  const attributeValueSelected = (e) => {
+    // Check if the selected value is not the default "Choose attribute value"
+    if (e.target.value !== "Choose attribute value") {
+      // Call the function to update the attributes table with the selected attribute key and value
+      setAttributesTableWrapper(attrKey.current.value, e.target.value);
     }
-  });
-};
+  };
 
+  // This function updates the attributes table with the selected attribute key and value
+  //SHOW ATTRIBUTE KEY AND VALUE TO THE TABLE
+  const setAttributesTableWrapper = (key, val) => {
+    // Update the attributes table state using the previous state
+    setAttributesTable((attr) => {
+      if (attr.length !== 0) {
+        let keyExistsInOldTable = false;
+        // Iterate over the existing attributes table to find and modify the matching key
+        let modifiedTable = attr.map((item) => {
+          if (item.key === key) {
+            keyExistsInOldTable = true;
+            // Update the value of the matching key with the new selected value
+            item.value = val;
+            return item;
+          } else {
+            return item;
+          }
+        });
+        // If the key existed in the old table, return the modified table
+        if (keyExistsInOldTable) return [...modifiedTable];
+        // If the key is new, add a new entry to the table with the selected key and value
+        else return [...modifiedTable, { key: key, value: val }];
+      } else {
+        // If the table was empty, create a new entry with the selected key and value
+        return [{ key: key, value: val }];
+      }
+    });
+  };
+  
+  //delete that attr table when click "x"
+  function deleteAttribute(key) {
+    setAttributesTable(function(table) {
+      //only return the table that does not match with the key which user requested to delete
+      return table.filter(function(item) {
+        return item.key !== key;
+      });
+    });
+  }
 
   return (
     <Container>
@@ -329,7 +338,7 @@ const setAttributesTableWrapper = (key, val) => {
                         <td>{item.key}</td>
                         <td>{item.value}</td>
                         <td>
-                          <CloseButton />
+                          <CloseButton onClick={()=>deleteAttribute(item.key)}/>
                         </td>
                       </tr>
                     ))}
