@@ -162,7 +162,7 @@ const AdminEditProductPageComponent = ({
       setAttributesFromDb([]);
     }
     //set current choosen category
-    setCategoryChoosen(e.target.value)
+    setCategoryChoosen(e.target.value);
   };
 
   // This function is triggered when an attribute value is selected
@@ -202,16 +202,35 @@ const AdminEditProductPageComponent = ({
       }
     });
   };
-  
+
   //delete that attr table when click "x"
   function deleteAttribute(key) {
-    setAttributesTable(function(table) {
+    setAttributesTable(function (table) {
       //only return the table that does not match with the key which user requested to delete
-      return table.filter(function(item) {
+      return table.filter(function (item) {
         return item.key !== key;
       });
     });
   }
+
+  //prevent submit form when user press enter
+  const checkKeyDown = (e) => {
+    if (e.code === "Enter") e.preventDefault();
+  };
+  //prevent submit form when user press enter
+  const newAttrKeyHandler = (e) => {
+    e.preventDefault();
+    if (e.keyCode && e.keyCode === 13) {
+      console.log("add new attribute");
+    }
+  };
+  //prevent submit form when user press enter
+  const newAttrValueHandler = (e) => {
+    e.preventDefault();
+    if (e.keyCode && e.keyCode === 13) {
+      console.log("add new attribute");
+    }
+  };
 
   return (
     <Container>
@@ -224,7 +243,12 @@ const AdminEditProductPageComponent = ({
 
         <Col md={6}>
           <h1>Edit product</h1>
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Form
+            noValidate
+            validated={validated}
+            onSubmit={handleSubmit}
+            onKeyDown={(e) => checkKeyDown(e)}
+          >
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
               <Form.Control
@@ -344,7 +368,9 @@ const AdminEditProductPageComponent = ({
                         <td>{item.key}</td>
                         <td>{item.value}</td>
                         <td>
-                          <CloseButton onClick={()=>deleteAttribute(item.key)}/>
+                          <CloseButton
+                            onClick={() => deleteAttribute(item.key)}
+                          />
                         </td>
                       </tr>
                     ))}
@@ -362,6 +388,7 @@ const AdminEditProductPageComponent = ({
                     placeholder="choose or create category"
                     name="newAttrKey"
                     type="text"
+                    onKeyUp={newAttrKeyHandler}
                   />
                 </Form.Group>
               </Col>
@@ -377,6 +404,7 @@ const AdminEditProductPageComponent = ({
                     required={true}
                     name="newAttrValue"
                     type="text"
+                    onKeyUp={newAttrValueHandler}
                   />
                 </Form.Group>
               </Col>
