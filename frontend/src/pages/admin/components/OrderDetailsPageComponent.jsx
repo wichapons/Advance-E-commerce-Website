@@ -38,7 +38,7 @@ const OrderDetailsPageComponent = ({ getOrder, markAsDelivered }) => {
           ? setIsDelivered(order.deliveredAt)
           : setIsDelivered(false);
         // set total price
-        setCartSubtotal(order.totalOrder.cartSubtotal);
+        setCartSubtotal(order.orderTotal.cartSubtotal);
         // if product is delivered disable the button
         if (order.isDelivered) {
           setOrderButtonMessage("Order is finished");

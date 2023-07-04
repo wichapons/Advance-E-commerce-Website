@@ -45,7 +45,7 @@ const OrdersPageComponent = ({ getOrders }) => {
                   </td>
                 ) : <td>cannot fetch name</td>}
                 <td>{order.createdAt.substring(0,10)}</td>
-                <td>{order.totalOrder.cartSubtotal}</td>
+                <td>{order.orderTotal.cartSubtotal}</td>
                 <td>
                   {order.isDelivered ? (
                     <i className="bi bi-check lg text-success"></i>
