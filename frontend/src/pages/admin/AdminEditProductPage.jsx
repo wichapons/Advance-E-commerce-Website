@@ -1,6 +1,7 @@
 import {Row,Col,Container,Form,Button,CloseButton,Table,Alert,Image} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const closeBtnStyle = {
   cursor : "pointer",
@@ -11,6 +12,9 @@ const closeBtnStyle = {
 
 const AdminEditProductPage = () => {
   const [validated, setValidated] = useState(false);
+  //get categories from redux state
+  const { categories } = useSelector((state) => state.getCategories);
+  console.log(categories);   
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -18,6 +22,7 @@ const AdminEditProductPage = () => {
     }
     setValidated(true);
   };
+  
   return (
     <Container>
       <Row className="justify-content-md-center mt-5">
@@ -145,7 +150,7 @@ const AdminEditProductPage = () => {
               <Row>
                 <Col style={{position:"relative"}} xs={3}>
                   <Image crossOrigin="anonymous" src="/images/games-category.png" fluid/>
-                  <i style={closeBtnStyle} class="bi bi-x-circle-fill"></i>
+                  <i style={closeBtnStyle} className="bi bi-x-circle-fill"></i>
                 </Col>
               </Row>
 
@@ -162,4 +167,3 @@ const AdminEditProductPage = () => {
 };
 
 export default AdminEditProductPage;
-
