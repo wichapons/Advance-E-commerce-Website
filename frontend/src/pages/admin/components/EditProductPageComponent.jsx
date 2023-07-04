@@ -35,11 +35,21 @@ const AdminEditProductPageComponent = ({
     error: "",
   });
 
+  const { id } = useParams();
   const [attributesFromDb, setAttributesFromDb] = useState([]);
   const attrVal = useRef(null);
   const attrKey = useRef(null);
 
-  // This function is triggered when a attribute is selected in a form field
+  //get product data from db
+  useEffect(() => {
+    fetchProduct(id)
+      .then((product) => {
+        setProduct(product);
+      })
+      .catch((er) => console.log(er));
+  }, [id]);
+
+  // Set attribute(key) to match with db
   const setValuesForAttrFromDbSelectForm = (e) => {
   // Check if the selected value is not the default "Choose attribute"
   if (e.target.value !== "Choose attribute") {
@@ -64,19 +74,7 @@ const AdminEditProductPageComponent = ({
       }
   }
 }
-
-
-
-  const { id } = useParams();
-
-  useEffect(() => {
-    fetchProduct(id)
-      .then((product) => {
-        setProduct(product);
-      })
-      .catch((er) => console.log(er));
-  }, [id]);
-
+  // Set attribute(value) to match with db
   useEffect(() => {
     //find current category data in product data that fetched from db
     let categoryOfEditedProduct = categories.find(item => {
@@ -106,9 +104,7 @@ const AdminEditProductPageComponent = ({
     }
   }, [product]);
 
-  console.log(categories);
-  console.log(product);
-
+  //submit button
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -139,6 +135,22 @@ const AdminEditProductPageComponent = ({
     }
     setValidated(true);
   };
+
+  // Make changes in attributes when the user changes the category
+const changeCategory = (e) => {
+  // Get the high-level category from the selected value
+  const highLevelCategory = e.target.value.split("/")[0];
+  // Find the high-level category's data from the categories array
+  const highLevelCategoryAllData = categories.find((cat) => cat.name === highLevelCategory);
+  // If high-level category data exists and has attributes
+  if (highLevelCategoryAllData && highLevelCategoryAllData.attrs) {
+    // Set the attributes from the high-level category's data to the state
+    setAttributesFromDb(highLevelCategoryAllData.attrs);
+  } else {
+    // If high-level category data doesn't exist or doesn't have attributes, set an empty array
+    setAttributesFromDb([]);
+  }
+}
 
   return (
     <Container>
@@ -199,7 +211,7 @@ const AdminEditProductPageComponent = ({
                 required
                 name="category"
                 aria-label="Default select example"
-
+                onChange={changeCategory}
               >
                 <option value="">Choose category</option>
                 {categories.map((category, idx) => {
