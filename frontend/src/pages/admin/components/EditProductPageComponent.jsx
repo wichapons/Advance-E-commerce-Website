@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Fragment } from "react";
 
@@ -36,7 +36,8 @@ const AdminEditProductPageComponent = ({
   });
 
   const { id } = useParams();
-  const [attributesFromDb, setAttributesFromDb] = useState([]);
+  const [attributesFromDb, setAttributesFromDb] = useState([]); //for select options
+  const [attributesTable, setAttributesTable] = useState([]); // for showing tables of current attr
   const attrVal = useRef(null);
   const attrKey = useRef(null);
 
@@ -51,38 +52,40 @@ const AdminEditProductPageComponent = ({
 
   // Set attribute(key) to match with db
   const setValuesForAttrFromDbSelectForm = (e) => {
-  // Check if the selected value is not the default "Choose attribute"
-  if (e.target.value !== "Choose attribute") {
+    // Check if the selected value is not the default "Choose attribute"
+    if (e.target.value !== "Choose attribute") {
       // Find the selected attribute from the database based on the key
-      let selectedAttr = attributesFromDb.find((item) => item.key === (e.target.value)); 
+      let selectedAttr = attributesFromDb.find(
+        (item) => item.key === e.target.value
+      );
       // Get the element representing the options for attribute values
       let valuesForAttrKeys = attrVal.current;
       // Check if the selected attribute has values
       if (selectedAttr && selectedAttr.value.length > 0) {
-          // Remove all existing options from the attribute values element
-          while (valuesForAttrKeys.options.length) {
-              valuesForAttrKeys.remove(0);
-          }
-          // Add a default option to choose attribute value
-          valuesForAttrKeys.options.add(new Option("Choose attribute value"));
-          
-          // Iterate over the selected attribute's values and add them as options
-          selectedAttr.value.map(item => {
-              valuesForAttrKeys.add(new Option(item));
-              return "";
-          })
+        // Remove all existing options from the attribute values element
+        while (valuesForAttrKeys.options.length) {
+          valuesForAttrKeys.remove(0);
+        }
+        // Add a default option to choose attribute value
+        valuesForAttrKeys.options.add(new Option("Choose attribute value"));
+
+        // Iterate over the selected attribute's values and add them as options
+        selectedAttr.value.map((item) => {
+          valuesForAttrKeys.add(new Option(item));
+          return "";
+        });
       }
-  }
-}
+    }
+  };
   // Set attribute(value) to match with db
   useEffect(() => {
     //find current category data in product data that fetched from db
-    let categoryOfEditedProduct = categories.find(item => {
-      if (product.category){
-        return product.category.includes(item.name)
+    let categoryOfEditedProduct = categories.find((item) => {
+      if (product.category) {
+        return product.category.includes(item.name);
       }
-    })
-    
+    });
+
     //if category exists in database
     if (categoryOfEditedProduct) {
       // Get the main category from the current category's name
@@ -102,6 +105,8 @@ const AdminEditProductPageComponent = ({
         setAttributesFromDb(mainCategoryOfEditedProductAllData.attrs);
       }
     }
+    //set current product attr
+    setAttributesTable(product.attrs);
   }, [product]);
 
   //submit button
@@ -137,20 +142,22 @@ const AdminEditProductPageComponent = ({
   };
 
   // Make changes in attributes when the user changes the category
-const changeCategory = (e) => {
-  // Get the high-level category from the selected value
-  const highLevelCategory = e.target.value.split("/")[0];
-  // Find the high-level category's data from the categories array
-  const highLevelCategoryAllData = categories.find((cat) => cat.name === highLevelCategory);
-  // If high-level category data exists and has attributes
-  if (highLevelCategoryAllData && highLevelCategoryAllData.attrs) {
-    // Set the attributes from the high-level category's data to the state
-    setAttributesFromDb(highLevelCategoryAllData.attrs);
-  } else {
-    // If high-level category data doesn't exist or doesn't have attributes, set an empty array
-    setAttributesFromDb([]);
-  }
-}
+  const changeCategory = (e) => {
+    // Get the high-level category from the selected value
+    const highLevelCategory = e.target.value.split("/")[0];
+    // Find the high-level category's data from the categories array
+    const highLevelCategoryAllData = categories.find(
+      (cat) => cat.name === highLevelCategory
+    );
+    // If high-level category data exists and has attributes
+    if (highLevelCategoryAllData && highLevelCategoryAllData.attrs) {
+      // Set the attributes from the high-level category's data to the state
+      setAttributesFromDb(highLevelCategoryAllData.attrs);
+    } else {
+      // If high-level category data doesn't exist or doesn't have attributes, set an empty array
+      setAttributesFromDb([]);
+    }
+  };
 
   return (
     <Container>
@@ -267,24 +274,28 @@ const changeCategory = (e) => {
             )}
 
             <Row>
-              <Table hover>
-                <thead>
-                  <tr>
-                    <th>Attribute</th>
-                    <th>Value</th>
-                    <th>Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>attr key</td>
-                    <td>attr value</td>
-                    <td>
-                      <CloseButton />
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
+              {attributesTable && attributesTable.length > 0 && (
+                <Table hover>
+                  <thead>
+                    <tr>
+                      <th>Attribute</th>
+                      <th>Value</th>
+                      <th>Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attributesTable.map((item, idx) => (
+                      <tr key={idx}>
+                        <td>{item.key}</td>
+                        <td>{item.value}</td>
+                        <td>
+                          <CloseButton />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
             </Row>
 
             <Row>
