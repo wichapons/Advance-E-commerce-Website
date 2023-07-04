@@ -30,14 +30,15 @@ const LoginPageComponent = ({loginUserApiRequest,reduxDispatch, setReduxUserStat
       .then((res) => {
         //set state 
         setLoginUserResponseState({ success: res.success, loading: false, error: "" });
-        
         if (res.userLoggedIn) {
           reduxDispatch(setReduxUserState(res.userLoggedIn));
       }
         //redirect after login successfully
         if (res.success === "user logged in" && !res.userLoggedIn.isAdmin) {
           //if not admin redirect to user
-          navigate("/user", { replace: true }) //delete current url eg. shop/login after login success if user go back it will redirect to shop/
+          console.log('triggered');
+          window.location.href = "/user";
+          //navigate("/user", { replace: true }) //delete current url eg. shop/login after login success if user go back it will redirect to shop/
         }
           //if admin navigate to admin page
         else navigate("/admin/orders", { replace: true });
