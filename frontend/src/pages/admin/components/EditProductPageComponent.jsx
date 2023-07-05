@@ -29,6 +29,7 @@ const AdminEditProductPageComponent = ({
   reduxDispatch,
   saveAttributeToCatDoc,
   imageDeleteHandler,
+  uploadHandler
 }) => {
   const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
@@ -45,6 +46,8 @@ const AdminEditProductPageComponent = ({
   const [newAttrKey, setNewAttrKey] = useState(false);
   const [newAttrValue, setNewAttrValue] = useState(false);
   const [imageRemoved, setImageRemoved] = useState(false);
+  const [isUploading, setIsUploading] = useState("");
+  const [imageUploaded, setImageUploaded] = useState(false);
 
   const attrVal = useRef(null);
   const attrKey = useRef(null);
@@ -58,7 +61,7 @@ const AdminEditProductPageComponent = ({
         setProduct(product);
       })
       .catch((er) => console.log(er));
-  }, [id, imageRemoved]); //trigger re-render when id or imageRemove is updated
+  }, [id, imageRemoved,imageUploaded]); //trigger re-render when id or imageRemove is updated
 
   // Set attribute(key) to match with db
   const setValuesForAttrFromDbSelectForm = (e) => {
@@ -257,6 +260,17 @@ const AdminEditProductPageComponent = ({
       }
     }
   };
+
+  const uploadInProgrssAlert = (e)=>{
+    setIsUploading("upload files in progress ..."); 
+    uploadHandler(e.target.files, id)
+    .then(data => {
+    setIsUploading("upload file completed"); 
+    setImageUploaded(!imageUploaded);
+    })
+    .catch((er) => setIsUploading(er.response.data.message ? er.response.data.message : er.response.data));
+  console.log(isUploading);
+  }
 
   return (
     <Container>
@@ -473,7 +487,9 @@ const AdminEditProductPageComponent = ({
                   })}
               </Row>
 
-              <Form.Control required type="file" multiple />
+              <Form.Control type="file" multiple onChange={uploadInProgrssAlert}/>
+              <Fragment>{isUploading}</Fragment>
+               
             </Form.Group>
             <Button variant="primary" type="submit">
               Update
