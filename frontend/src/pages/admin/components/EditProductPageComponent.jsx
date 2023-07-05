@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Fragment } from "react";
 
+
 const closeBtnStyle = {
   cursor: "pointer",
   position: "absolute",
@@ -16,6 +17,8 @@ const AdminEditProductPageComponent = ({
   categories,
   fetchProduct,
   updateProductApiRequest,
+  reduxDispatch,
+  saveAttributeToCatDoc
 }) => {
   const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
@@ -232,13 +235,15 @@ const AdminEditProductPageComponent = ({
         if (newAttrKey && newAttrValue) {
           //add to table
           setAttributesTableWrapper(newAttrKey, newAttrValue);
+          //save to redux and send to db 
+          reduxDispatch(saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChoosen));
+          //then clear the input field
           e.target.value = "";
           createNewAttrKey.current.value = "";
           createNewAttrVal.current.value = "";
           setNewAttrKey(false);
           setNewAttrValue(false);
        }
-
     }
 }
 
