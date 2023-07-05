@@ -269,17 +269,19 @@ const adminDeleteProductImage = async (req, res,next) => {
 
     fs.unlink(finalPath, (err) => { //remove file
       if (err) {
-        res.status(500).send(err);
+        return res.status(500).send('file not found on server')
       }
     });
+
     //update db
     await Product.findOneAndUpdate(
       { _id: req.params.productId }, //find product with specific id
       { $pull: { images: { path: imagePath } } } //remove path
     ).orFail();
-    await Product.save();
-    return res.status(200).send("delete successfully")
+    return res.status(200).send("Delete successfully");
+
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };
