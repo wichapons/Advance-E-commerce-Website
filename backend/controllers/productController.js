@@ -224,6 +224,7 @@ const adminUpdateProduct = async (req, res, next) => {
 const adminUpload = async (req, res, next) => {
   try {
       if(!req.files || !req.files.images) {  //if one file uploaded req.files.images will become object, >1 become array
+        console.log('No files were uploaded.');
         return res.status(400).send("No files were uploaded.")
   }
       //check file type and number of uploaded files not exceed the limitaion
@@ -242,13 +243,16 @@ const adminUpload = async (req, res, next) => {
       //upload logic 
       const uploadDirectory = path.resolve(__dirname,"../../frontend","public","images","products")
       const productDoc = await Product.findById(req.query.productId).orFail(); //get product doc by id
-
+      //create destination folder first to prevent folder not found and causing error
+      fs.mkdirSync(uploadDirectory, { recursive: true });
       for(let image of imagesArray) {
+        console.log('finding images');
         let fileName = uuidv4() + path.extname(image.name);
         let uploadPath = uploadDirectory + "/" + fileName;
             // Await the file move operation
             await image.mv(uploadPath, function(err) { 
                 if(err) {
+                  console.log('save image to server',err);
                     return res.status(500).send(err);
                 }
             });
