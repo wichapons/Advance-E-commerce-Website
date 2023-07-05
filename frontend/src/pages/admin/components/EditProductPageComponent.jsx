@@ -1,9 +1,18 @@
-import {Row,Col,Container,Form,Button,CloseButton,Table,Alert,Image,} from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Container,
+  Form,
+  Button,
+  CloseButton,
+  Table,
+  Alert,
+  Image,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Fragment } from "react";
-
 
 const closeBtnStyle = {
   cursor: "pointer",
@@ -18,7 +27,8 @@ const AdminEditProductPageComponent = ({
   fetchProduct,
   updateProductApiRequest,
   reduxDispatch,
-  saveAttributeToCatDoc
+  saveAttributeToCatDoc,
+  imageDeleteHandler,
 }) => {
   const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
@@ -34,7 +44,7 @@ const AdminEditProductPageComponent = ({
   const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
   const [newAttrKey, setNewAttrKey] = useState(false);
   const [newAttrValue, setNewAttrValue] = useState(false);
-
+  const [imageRemoved, setImageRemoved] = useState(false);
 
   const attrVal = useRef(null);
   const attrKey = useRef(null);
@@ -48,7 +58,7 @@ const AdminEditProductPageComponent = ({
         setProduct(product);
       })
       .catch((er) => console.log(er));
-  }, [id]);
+  }, [id, imageRemoved]); //trigger re-render when id or imageRemove is updated
 
   // Set attribute(key) to match with db
   const setValuesForAttrFromDbSelectForm = (e) => {
@@ -220,32 +230,33 @@ const AdminEditProductPageComponent = ({
     e.preventDefault();
     setNewAttrKey(e.target.value);
     addNewAttributeManually(e);
-    
   };
   //prevent submit form when user press enter
   const newAttrValueHandler = (e) => {
     e.preventDefault();
     setNewAttrValue(e.target.value);
-      addNewAttributeManually(e);
+    addNewAttributeManually(e);
   };
 
   //add new custom attributes
   const addNewAttributeManually = (e) => {
     if (e.keyCode && e.keyCode === 13) {
-        if (newAttrKey && newAttrValue) {
-          //add to table
-          setAttributesTableWrapper(newAttrKey, newAttrValue);
-          //save to redux and send to db 
-          reduxDispatch(saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChoosen));
-          //then clear the input field
-          e.target.value = "";
-          createNewAttrKey.current.value = "";
-          createNewAttrVal.current.value = "";
-          setNewAttrKey(false);
-          setNewAttrValue(false);
-       }
+      if (newAttrKey && newAttrValue) {
+        //add to table
+        setAttributesTableWrapper(newAttrKey, newAttrValue);
+        //save to redux and send to db
+        reduxDispatch(
+          saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChoosen)
+        );
+        //then clear the input field
+        e.target.value = "";
+        createNewAttrKey.current.value = "";
+        createNewAttrVal.current.value = "";
+        setNewAttrKey(false);
+        setNewAttrValue(false);
+      }
     }
-}
+  };
 
   return (
     <Container>
@@ -428,7 +439,10 @@ const AdminEditProductPageComponent = ({
               </Col>
             </Row>
 
-            <Alert  show={(newAttrKey && newAttrValue)? true:false } variant="primary">
+            <Alert
+              show={newAttrKey && newAttrValue ? true : false}
+              variant="primary"
+            >
               After typing attribute key and value press enter on one of the
               field
             </Alert>
@@ -445,7 +459,15 @@ const AdminEditProductPageComponent = ({
                           src={image.path ?? null}
                           fluid
                         />
-                        <i style={closeBtnStyle} className="bi bi-x-circle"></i>
+                        <i
+                          style={closeBtnStyle}
+                          onClick={() =>
+                            imageDeleteHandler(image.path, id).then((data) =>
+                              setImageRemoved(!imageRemoved)
+                            )
+                          }
+                          className="bi bi-x-circle"
+                        ></i>
                       </Col>
                     );
                   })}

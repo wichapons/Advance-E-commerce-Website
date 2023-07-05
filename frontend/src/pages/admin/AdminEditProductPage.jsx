@@ -23,6 +23,14 @@ const AdminEditProductPage = () => {
 
   const reduxDispatch = useDispatch();
 
+  //for delete image in the database
+  const imageDeleteHandler = async (imagePath, productId) => {
+    let encoded = encodeURIComponent(imagePath) //encode first because there is some / in our text
+    await axios.delete(`/api/products/admin/image/${encoded}/${productId}`).then((res)=>{
+      console.log(res.data);
+    })
+}
+
   return (
     <AdminEditProductPageComponent
       categories={categories}
@@ -30,6 +38,7 @@ const AdminEditProductPage = () => {
       updateProductApiRequest={updateProductApiRequest}
       reduxDispatch={reduxDispatch}
       saveAttributeToCatDoc={saveAttributeToCatDoc}
+      imageDeleteHandler={imageDeleteHandler}
     />
   );
 };
