@@ -1,14 +1,4 @@
-import {
-  Row,
-  Col,
-  Container,
-  Form,
-  Button,
-  CloseButton,
-  Table,
-  Alert,
-  Image,
-} from "react-bootstrap";
+import {Row,Col,Container,Form,Button,CloseButton,Table,Alert,Image,} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -39,9 +29,14 @@ const AdminEditProductPageComponent = ({
   const [attributesFromDb, setAttributesFromDb] = useState([]); //for select options
   const [attributesTable, setAttributesTable] = useState([]); // for showing tables of current attr
   const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
+  const [newAttrKey, setNewAttrKey] = useState(false);
+  const [newAttrValue, setNewAttrValue] = useState(false);
+
 
   const attrVal = useRef(null);
   const attrKey = useRef(null);
+  const createNewAttrKey = useRef(null);
+  const createNewAttrVal = useRef(null);
 
   //get product data from db
   useEffect(() => {
@@ -220,17 +215,32 @@ const AdminEditProductPageComponent = ({
   //prevent submit form when user press enter
   const newAttrKeyHandler = (e) => {
     e.preventDefault();
-    if (e.keyCode && e.keyCode === 13) {
-      console.log("add new attribute");
-    }
+    setNewAttrKey(e.target.value);
+    addNewAttributeManually(e);
+    
   };
   //prevent submit form when user press enter
   const newAttrValueHandler = (e) => {
     e.preventDefault();
-    if (e.keyCode && e.keyCode === 13) {
-      console.log("add new attribute");
-    }
+    setNewAttrValue(e.target.value);
+      addNewAttributeManually(e);
   };
+
+  //add new custom attributes
+  const addNewAttributeManually = (e) => {
+    if (e.keyCode && e.keyCode === 13) {
+        if (newAttrKey && newAttrValue) {
+          //add to table
+          setAttributesTableWrapper(newAttrKey, newAttrValue);
+          e.target.value = "";
+          createNewAttrKey.current.value = "";
+          createNewAttrVal.current.value = "";
+          setNewAttrKey(false);
+          setNewAttrValue(false);
+       }
+
+    }
+}
 
   return (
     <Container>
@@ -384,11 +394,13 @@ const AdminEditProductPageComponent = ({
                 <Form.Group className="mb-3" controlId="formBasicNewAttribute">
                   <Form.Label>Create new attribute</Form.Label>
                   <Form.Control
+                    ref={createNewAttrKey}
                     disabled={categoryChoosen === "Choose category"}
                     placeholder="choose or create category"
                     name="newAttrKey"
                     type="text"
                     onKeyUp={newAttrKeyHandler}
+                    required={newAttrValue}
                   />
                 </Form.Group>
               </Col>
@@ -399,6 +411,7 @@ const AdminEditProductPageComponent = ({
                 >
                   <Form.Label>Attribute value</Form.Label>
                   <Form.Control
+                    ref={createNewAttrVal}
                     disabled={categoryChoosen === "Choose category"}
                     placeholder="first choose or create category"
                     required={true}
@@ -410,7 +423,7 @@ const AdminEditProductPageComponent = ({
               </Col>
             </Row>
 
-            <Alert variant="primary">
+            <Alert  show={(newAttrKey && newAttrValue)? true:false } variant="primary">
               After typing attribute key and value press enter on one of the
               field
             </Alert>
