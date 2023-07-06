@@ -26,11 +26,15 @@ const AdminEditProductPage = () => {
   //for delete image in the database
   const imageDeleteHandler = async (imagePath, productId) => {
     let encoded = encodeURIComponent(imagePath); //encode first because there is some / in our text
-    await axios
+    if (process.env.NODE_ENV === "production") {
+      // to do: change to !==
+      await axios
       .delete(`/api/products/admin/image/${encoded}/${productId}`)
       .then((res) => {
         console.log(res.data);
       });
+    }
+    await axios.delete(`/api/products/admin/image/${encoded}/${productId}?cloudinary=true`);  
   };
 
   const uploadHandler = async (images, productId) => {

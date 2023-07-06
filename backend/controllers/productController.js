@@ -222,6 +222,7 @@ const adminUpdateProduct = async (req, res, next) => {
 }
 
 const adminUpload = async (req, res, next) => {
+  //check if upload to cloudinary
   if (req.query.cloudinary === "true") {
     try {
         let product = await Product.findById(req.query.productId).orFail();
@@ -232,6 +233,7 @@ const adminUpload = async (req, res, next) => {
     }
    return 
 }
+  //upload to local storage on server
   try {
       if(!req.files || !req.files.images) {  //if one file uploaded req.files.images will become object, >1 become array
         console.log('No files were uploaded.');
@@ -277,8 +279,21 @@ const adminUpload = async (req, res, next) => {
 }
 
 const adminDeleteProductImage = async (req, res,next) => {
+  const imagePath = decodeURIComponent(req.params.imagePath);
+  //check if delete cloudinary path
+  //delete only path in database **in future will implement delete file on Cloudinary
+  if (req.query.cloudinary === "true") {
+    try {
+       await Product.findOneAndUpdate({ _id: req.params.productId }, { $pull: { images: { path: imagePath } } }).orFail(); 
+        return res.end();
+    } catch(er) {
+        next(er);
+    }
+    return
+}
+  //delete path in database and file in server 
   try {
-    const imagePath = decodeURIComponent(req.params.imagePath);
+    
     const finalPath = path.resolve("../frontend/public") + imagePath; //join path with absolute format
 
     fs.unlink(finalPath, (err) => { //remove file
