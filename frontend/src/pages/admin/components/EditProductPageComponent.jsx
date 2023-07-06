@@ -1,19 +1,9 @@
-import {
-  Row,
-  Col,
-  Container,
-  Form,
-  Button,
-  CloseButton,
-  Table,
-  Alert,
-  Image,
-} from "react-bootstrap";
+import {Row,Col,Container,Form,Button,CloseButton,Table,Alert,Image} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Fragment } from "react";
-import { changeCategory } from "./utils/utils";
+import { changeCategory,setValuesForAttrFromDbSelectForm,setAttributesTableWrapper } from "./utils/utils";
 
 const closeBtnStyle = {
   cursor: "pointer",
@@ -65,33 +55,6 @@ const AdminEditProductPageComponent = ({
       .catch((er) => console.log(er));
   }, [id, imageRemoved,imageUploaded]); //trigger re-render when id or imageRemove is updated
 
-  // Set attribute(key) to match with db
-  const setValuesForAttrFromDbSelectForm = (e) => {
-    // Check if the selected value is not the default "Choose attribute"
-    if (e.target.value !== "Choose attribute") {
-      // Find the selected attribute from the database based on the key
-      let selectedAttr = attributesFromDb.find(
-        (item) => item.key === e.target.value
-      );
-      // Get the element representing the options for attribute values
-      let valuesForAttrKeys = attrVal.current;
-      // Check if the selected attribute has values
-      if (selectedAttr && selectedAttr.value.length > 0) {
-        // Remove all existing options from the attribute values element
-        while (valuesForAttrKeys.options.length) {
-          valuesForAttrKeys.remove(0);
-        }
-        // Add a default option to choose attribute value
-        valuesForAttrKeys.options.add(new Option("Choose attribute value"));
-
-        // Iterate over the selected attribute's values and add them as options
-        selectedAttr.value.map((item) => {
-          valuesForAttrKeys.add(new Option(item));
-          return "";
-        });
-      }
-    }
-  };
   // Set attribute(value) to match with db
   useEffect(() => {
     //find current category data in product data that fetched from db
@@ -165,38 +128,10 @@ const AdminEditProductPageComponent = ({
     // Check if the selected value is not the default "Choose attribute value"
     if (e.target.value !== "Choose attribute value") {
       // Call the function to update the attributes table with the selected attribute key and value
-      setAttributesTableWrapper(attrKey.current.value, e.target.value);
+      setAttributesTableWrapper(attrKey.current.value, e.target.value,setAttributesTable);
     }
   };
 
-  // This function updates the attributes table with the selected attribute key and value
-  //SHOW ATTRIBUTE KEY AND VALUE TO THE TABLE
-  const setAttributesTableWrapper = (key, val) => {
-    // Update the attributes table state using the previous state
-    setAttributesTable((attr) => {
-      if (attr.length !== 0) {
-        let keyExistsInOldTable = false;
-        // Iterate over the existing attributes table to find and modify the matching key
-        let modifiedTable = attr.map((item) => {
-          if (item.key === key) {
-            keyExistsInOldTable = true;
-            // Update the value of the matching key with the new selected value
-            item.value = val;
-            return item;
-          } else {
-            return item;
-          }
-        });
-        // If the key existed in the old table, return the modified table
-        if (keyExistsInOldTable) return [...modifiedTable];
-        // If the key is new, add a new entry to the table with the selected key and value
-        else return [...modifiedTable, { key: key, value: val }];
-      } else {
-        // If the table was empty, create a new entry with the selected key and value
-        return [{ key: key, value: val }];
-      }
-    });
-  };
 
   //delete that attr table when click "x"
   function deleteAttribute(key) {
@@ -230,7 +165,7 @@ const AdminEditProductPageComponent = ({
     if (e.keyCode && e.keyCode === 13) {
       if (newAttrKey && newAttrValue) {
         //add to table
-        setAttributesTableWrapper(newAttrKey, newAttrValue);
+        setAttributesTableWrapper(newAttrKey, newAttrValue,setAttributesTable);
         //save to redux and send to db
         reduxDispatch(
           saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChoosen)
@@ -356,7 +291,7 @@ const AdminEditProductPageComponent = ({
                       name="atrrKey"
                       aria-label="Default select example"
                       ref={attrKey}
-                      onChange={setValuesForAttrFromDbSelectForm}
+                      onChange={(e)=>setValuesForAttrFromDbSelectForm(e, attrVal, attributesFromDb)}
                     >
                       <option>Choose attribute</option>
 

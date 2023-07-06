@@ -1,8 +1,9 @@
 import { Row, Col, Container, Form, Button, CloseButton, Table, Alert} from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import React,{ useState,useRef,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { changeCategory } from "./utils/utils";
+import { changeCategory,setValuesForAttrFromDbSelectForm,setAttributesTableWrapper } from "./utils/utils";
+import { Fragment } from "react";
 
 const AdminCreateProductPageComponent = ({
   createProductApiRequest,
@@ -24,9 +25,11 @@ const AdminCreateProductPageComponent = ({
   });
   const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
   const [trigger, setTrigger] = useState(false);
+  const attrVal = useRef(null);
+  const attrKey = useRef(null);
   const navigate = useNavigate();
 
-  console.log("categories: ", categories);
+    
 
   //handle product create button
   const handleSubmit = (event) => {
@@ -114,11 +117,12 @@ const AdminCreateProductPageComponent = ({
         }
         */
 
+        //update setCategoryChoosen react state
+        setCategoryChoosen(e.target.value);
        //auto select custom category after user press enter
         catElement.options[catElement.options.length-1].selected = true;
 
-        // clear custom catergory input
-        setCategoryChoosen(e.target.value);
+        
         // Reset the target value to an empty string
         e.target.value = "";
       }, 400);
@@ -131,6 +135,14 @@ const AdminCreateProductPageComponent = ({
     reduxDispatch(deleteCategory(catElement.value));
     catElement.options[0].selected = true;
  }
+
+
+ const attributeValueSelected = (e) => {
+  if (e.target.value !== "Choose attribute value") {
+      setAttributesTableWrapper(attrKey.current.value, e.target.value, setAttributesTable);
+  }
+}
+
 
   return (
     <Container>
@@ -207,14 +219,18 @@ const AdminCreateProductPageComponent = ({
                 <Form.Group className="mb-3" controlId="formBasicAttributes">
                   <Form.Label>Choose atrribute and set value</Form.Label>
                   <Form.Select
-                    name="atrrKey"
+                    name="attrKey"
                     aria-label="Default select example"
-                  >
+                    ref={attrKey}
+                    onChange={(e)=>setValuesForAttrFromDbSelectForm(e, attrVal, attributesFromDb)}
+                    >
                     <option>Choose attribute</option>
                     {attributesFromDb.map((item,idx)=>{
-                      <React.Fragment key={idx}>
+                      return(
+                      <Fragment key={idx}>
                           <option value={item.key}>{item.key}</option>
-                        </React.Fragment>
+                        </Fragment>
+                      )
                     })}
                   </Form.Select>
                 </Form.Group>
@@ -226,8 +242,10 @@ const AdminCreateProductPageComponent = ({
                 >
                   <Form.Label>Attribute value</Form.Label>
                   <Form.Select
-                    name="atrrVal"
+                    name="attrVal"
                     aria-label="Default select example"
+                    ref={attrVal}
+                    onChange={attributeValueSelected}
                   >
                     <option>Choose attribute value</option>
                   </Form.Select>
