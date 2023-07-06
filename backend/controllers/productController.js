@@ -222,6 +222,16 @@ const adminUpdateProduct = async (req, res, next) => {
 }
 
 const adminUpload = async (req, res, next) => {
+  if (req.query.cloudinary === "true") {
+    try {
+        let product = await Product.findById(req.query.productId).orFail();
+        product.images.push({ path: req.body.url });
+        await product.save();
+    } catch (err) {
+        next(err);
+    }
+   return 
+}
   try {
       if(!req.files || !req.files.images) {  //if one file uploaded req.files.images will become object, >1 become array
         console.log('No files were uploaded.');

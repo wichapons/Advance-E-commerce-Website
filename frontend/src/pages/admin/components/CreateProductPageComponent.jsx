@@ -1,55 +1,97 @@
-import {Row,Col,Container,Form,Button,CloseButton,Table,Alert,} from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Container,
+  Form,
+  Button,
+  CloseButton,
+  Table,
+  Alert,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const AdminCreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRequest }) => {
+const AdminCreateProductPageComponent = ({
+  createProductApiRequest,
+  uploadImagesApiRequest,
+  uploadImagesCloudinaryApiRequest,
+}) => {
   const [validated, setValidated] = useState(false);
   const [attributesTable, setAttributesTable] = useState([]);
   const [images, setImages] = useState(false);
   const [isCreating, setIsCreating] = useState("");
-  const [createProductResponseState, setCreateProductResponseState] = useState({ message: "", error: "" });
+  const [createProductResponseState, setCreateProductResponseState] = useState({
+    message: "",
+    error: "",
+  });
 
   const navigate = useNavigate();
 
-  useEffect(()=>{
-  },[images])
+  useEffect(() => {}, [images]);
 
+  //handle product create button
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const element = form.elements;
+    // Extract form input values
     const formInputs = {
-        name: element.name.value,
-        description: element.description.value,
-        count: element.count.value,
-        price: element.price.value,
-        category: element.category.value,
-        attributesTable: attributesTable
-    }
+      name: element.name.value,
+      description: element.description.value,
+      count: element.count.value,
+      price: element.price.value,
+      category: element.category.value,
+      attributesTable: attributesTable,
+    };
     if (event.currentTarget.checkValidity() === true) {
-        createProductApiRequest(formInputs)
-        .then(data => {
+      // Send product details to the database
+      createProductApiRequest(formInputs)
+        .then((data) => {
           if (images) {
-            uploadImagesApiRequest(images, data.productId)
-            .then(res => {})
-            .catch((er) => setIsCreating(er.response.data.message ? er.response.data.message : er.response.data))
-        }
-        if (data.message === "product created") {
-          navigate("/admin/products")
-        };
-    })
-        .catch(er => {
-          setCreateProductResponseState({ error: er.response.data.message ? er.response.data.message : er.response.data });
+            if (process.env.NODE_ENV === "production") {
+              // to do: change to !==
+              // Upload images to the server and path to database
+              uploadImagesApiRequest(images, data.productId)
+                .then((res) => {})
+                .catch((er) =>
+                  setIsCreating(
+                    er.response.data.message
+                      ? er.response.data.message
+                      : er.response.data
+                  )
+                );
+            } else {
+              // Upload images to Cloudinary using the Cloudinary API and path to database
+              uploadImagesCloudinaryApiRequest(images, data.productId);
+            }
+          }
+          return data;
         })
+        .then((data) => {
+          //update creating product status
+          setIsCreating("Product is being created....");
+          //set time out 5s
+          setTimeout(() => {
+            setIsCreating("");
+            if (data.message === "product created") navigate("/admin/products");
+          }, 5000);
+        })
+
+        .catch((er) => {
+          setCreateProductResponseState({
+            error: er.response.data.message
+              ? er.response.data.message
+              : er.response.data,
+          });
+        });
     }
     setValidated(true);
   };
 
   const uploadHandler = (images) => {
     setImages(images);
-}
-
+  };
 
   return (
     <Container>
@@ -199,7 +241,12 @@ const AdminCreateProductPageComponent = ({ createProductApiRequest, uploadImages
             <Form.Group controlId="formFileMultiple" className="mb-3 mt-3">
               <Form.Label>Images</Form.Label>
 
-              <Form.Control required type="file" multiple onChange={(e) => uploadHandler(e.target.files)}/>
+              <Form.Control
+                required
+                type="file"
+                multiple
+                onChange={(e) => uploadHandler(e.target.files)}
+              />
               {isCreating}
             </Form.Group>
             <Button variant="primary" type="submit">
