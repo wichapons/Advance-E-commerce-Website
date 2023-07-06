@@ -19,8 +19,8 @@ const newCategory = async (req, res, next) => {
             if(isCategoryExisted){
                 res.status(400).send('This category already existed') 
             }else{
-                const createdCategory = await Category.create({name: category})
-                res.status(200).send(`Category has been created: ${createdCategory}`)
+                const categoryCreated = await Category.create({name: category})
+                res.status(201).send({categoryCreated: categoryCreated})
             }
         }
     } catch (err) {
@@ -36,9 +36,9 @@ const deleteCategory = async(req,res,next)=>{
                 name: decodeURIComponent(req.params.category)
             }).orFail()
             await targetedCategory.deleteOne()
-            res.json({categoryDeleted: true})
+            res.status(200).json({categoryDeleted: true})
         }else{
-            res.status(200).send('Invalid input on category selection')
+            res.status(400).send('Invalid input on category selection')
             return;
         }
     } catch (error) {
