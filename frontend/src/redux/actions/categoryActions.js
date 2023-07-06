@@ -36,4 +36,17 @@ export const saveAttributeToCatDoc = (key, val, categoryChoosen) => async (dispa
         
     }
 }
+//save delete category update to database and update redux state
+export const deleteCategory = (category) => async (dispatch, getState) => {
+    const cat = getState().getCategories.categories;
+    const categories = cat.filter((item) => item.name !== category);
+    //encode something like space / * that are in category name
+    const { data } = await axios.delete("/api/categories/" + encodeURIComponent(category));
+    if (data.categoryDeleted) {
+        dispatch({
+           type: actionTypes.DELETE_CATEGORY, 
+           payload: [...categories],
+        })
+    }
+}
 
