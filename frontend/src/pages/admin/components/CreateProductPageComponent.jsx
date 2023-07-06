@@ -1,7 +1,8 @@
 import { Row, Col, Container, Form, Button, CloseButton, Table, Alert} from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Fragment, useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { changeCategory } from "./utils/utils";
 
 const AdminCreateProductPageComponent = ({
   createProductApiRequest,
@@ -14,6 +15,7 @@ const AdminCreateProductPageComponent = ({
 }) => {
   const [validated, setValidated] = useState(false);
   const [attributesTable, setAttributesTable] = useState([]);
+  const [attributesFromDb, setAttributesFromDb] = useState([]);
   const [images, setImages] = useState(false);
   const [isCreating, setIsCreating] = useState("");
   const [createProductResponseState, setCreateProductResponseState] = useState({
@@ -177,8 +179,9 @@ const AdminCreateProductPageComponent = ({
                 name="category"
                 aria-label="Default select example"
                 id="cats"
+                onChange={(e)=>changeCategory( e,categories,setAttributesFromDb,setCategoryChoosen)}
               >
-                <option value="Choose category">Choose category</option>
+                <option value="">Choose category</option>
                 {categories.map((category, idx) => (
                   <option key={idx} value={category.name}>
                     {category.name}
@@ -197,8 +200,9 @@ const AdminCreateProductPageComponent = ({
                 type="text"
               />
             </Form.Group>
-
-            <Row className="mt-5">
+                  
+                  {attributesFromDb.length>0 && (
+                    <Row className="mt-5">
               <Col md={6}>
                 <Form.Group className="mb-3" controlId="formBasicAttributes">
                   <Form.Label>Choose atrribute and set value</Form.Label>
@@ -207,7 +211,11 @@ const AdminCreateProductPageComponent = ({
                     aria-label="Default select example"
                   >
                     <option>Choose attribute</option>
-                    <option value="red">color</option>
+                    {attributesFromDb.map((item,idx)=>{
+                      <React.Fragment key={idx}>
+                          <option value={item.key}>{item.key}</option>
+                        </React.Fragment>
+                    })}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -226,8 +234,9 @@ const AdminCreateProductPageComponent = ({
                 </Form.Group>
               </Col>
             </Row>
-
+                  )}
             <Row>
+            {attributesTable.length > 0 && (
               <Table hover>
                 <thead>
                   <tr>
@@ -237,15 +246,18 @@ const AdminCreateProductPageComponent = ({
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>attr key</td>
-                    <td>attr value</td>
-                    <td>
-                      <CloseButton />
-                    </td>
-                  </tr>
-                </tbody>
+                {attributesTable.map((item, idx) => (
+                      <tr key={idx}>
+                        <td>{item.key}</td>
+                        <td>{item.value}</td>
+                        <td>
+                          <CloseButton />
+                        </td>
+                      </tr>
+                    ))}
+                    </tbody>
               </Table>
+              )}
             </Row>
 
             <Row>
@@ -253,7 +265,7 @@ const AdminCreateProductPageComponent = ({
                 <Form.Group className="mb-3" controlId="formBasicNewAttribute">
                   <Form.Label>Create new attribute</Form.Label>
                   <Form.Control
-                    disabled={categoryChoosen === "Choose category"}
+                    disabled={["", "Choose category"].includes(categoryChoosen)}
                     placeholder="choose or create category"
                     name="newAttrValue"
                     type="text"
