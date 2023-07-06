@@ -22,3 +22,18 @@ export const saveAttributeToCatDoc = (key, val, categoryChoosen) => async (dispa
     }
  }
  
+ //save custom category to database and send to redux
+ export const newCategory = (category) => async (dispatch, getState) => {
+    //get category data from redux state
+    const cat = getState().getCategories.categories;
+    const response = await axios.post("/api/categories", { category });
+    //if category was created then dispatch the reducer
+    if (response.data.categoryCreated) {
+        dispatch({
+            type: actionTypes.INSERT_CATEGORY,
+            payload: [...cat, response.data.categoryCreated],
+        })
+        
+    }
+}
+
