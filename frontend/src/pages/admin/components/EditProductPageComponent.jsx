@@ -29,7 +29,8 @@ const AdminEditProductPageComponent = ({
   reduxDispatch,
   saveAttributeToCatDoc,
   imageDeleteHandler,
-  uploadHandler
+  uploadImagesCloudinaryApiRequest,
+  uploadImagesApiRequest
 }) => {
   const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
@@ -261,16 +262,27 @@ const AdminEditProductPageComponent = ({
     }
   };
 
-  const uploadInProgrssAlert = (e)=>{
-    setIsUploading("upload files in progress ..."); 
-    uploadHandler(e.target.files, id)
-    .then(data => {
-    setIsUploading("upload file completed"); 
-    setImageUploaded(!imageUploaded);
-    })
-    .catch((er) => setIsUploading(er.response.data.message ? er.response.data.message : er.response.data));
-  console.log(isUploading);
-  }
+  const uploadInProgrssAlert =(e)=>{
+    console.log('triggered');
+      setIsUploading("upload files in progress ..."); 
+      if (process.env.NODE_ENV !== "production") {
+          // to do: change to !==
+          // Upload images to the server
+          uploadImagesApiRequest(e.target.files, id)
+          .then(data => {
+              setIsUploading("upload file completed");
+              setImageUploaded(!imageUploaded);
+          })
+           .catch((er) => setIsUploading(er.response.data.message ? er.response.data.message : er.response.data));
+      } else {
+        // Upload images to Cloudinary using the Cloudinary API
+          uploadImagesCloudinaryApiRequest(e.target.files, id);
+           setIsUploading("upload file completed. wait for the result take effect, refresh also if neccassry");
+           setTimeout(()=> {
+               setImageUploaded(!imageUploaded);
+           }, 5000)
+      }
+   }
 
   return (
     <Container>
