@@ -79,7 +79,7 @@ const saveAttr = async (req, res, next) => {
 
         await categoryExists.save()
         let cat = await Category.find({}).sort({name: "asc"})
-        return res.status(201).json({categoriesUpdated: cat})
+        return res.status(201).json({categoryUpdated: cat})
     } catch(err) {
         next(err)
     }
