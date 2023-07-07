@@ -145,7 +145,10 @@ const AdminEditProductPageComponent = ({
 
   //prevent submit form when user press enter
   const checkKeyDown = (e) => {
-    if (e.code === "Enter") e.preventDefault();
+    if (e.keyCode === 13) {
+      console.log('triggered');
+      e.preventDefault()
+    };
   };
   //prevent submit form when user press enter
   const newAttrKeyHandler = (e) => {

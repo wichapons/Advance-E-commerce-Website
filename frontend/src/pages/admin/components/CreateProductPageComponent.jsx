@@ -1,8 +1,13 @@
 import { Row, Col, Container, Form, Button, CloseButton, Table, Alert} from "react-bootstrap";
 import { Link } from "react-router-dom";
-import React,{ useState,useRef,useEffect } from "react";
+import { useSelector } from "react-redux";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { changeCategory,setValuesForAttrFromDbSelectForm,setAttributesTableWrapper } from "./utils/utils";
+import {
+  changeCategory,
+  setValuesForAttrFromDbSelectForm,
+  setAttributesTableWrapper,
+} from "./utils/utils";
 import { Fragment } from "react";
 
 const AdminCreateProductPageComponent = ({
@@ -12,7 +17,8 @@ const AdminCreateProductPageComponent = ({
   categories,
   reduxDispatch,
   newCategory,
-  deleteCategory
+  deleteCategory,
+  saveAttributeToCatDoc,
 }) => {
   const [validated, setValidated] = useState(false);
   const [attributesTable, setAttributesTable] = useState([]);
@@ -23,13 +29,19 @@ const AdminCreateProductPageComponent = ({
     message: "",
     error: "",
   });
+
   const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
   const [trigger, setTrigger] = useState(false);
+  //create ref for attr key and value
   const attrVal = useRef(null);
   const attrKey = useRef(null);
-  const navigate = useNavigate();
+  //creat new const for saving custom attr
+  const createNewAttrKey = useRef(null);
+  const createNewAttrVal = useRef(null);
+  const [newAttrKey, setNewAttrKey] = useState(false);
+  const [newAttrValue, setNewAttrValue] = useState(false);
 
-    
+  const navigate = useNavigate();
 
   //handle product create button
   const handleSubmit = (event) => {
@@ -119,30 +131,72 @@ const AdminCreateProductPageComponent = ({
 
         //update setCategoryChoosen react state
         setCategoryChoosen(e.target.value);
-       //auto select custom category after user press enter
-        catElement.options[catElement.options.length-1].selected = true;
+        //auto select custom category after user press enter
+        catElement.options[catElement.options.length - 1].selected = true;
 
-        
         // Reset the target value to an empty string
         e.target.value = "";
       }, 400);
     }
   };
 
-  //Delete category function 
+  //Delete category function
   const deleteCategoryHandler = () => {
-    let catElement = document.getElementById("cats"); 
+    let catElement = document.getElementById("cats");
     reduxDispatch(deleteCategory(catElement.value));
     catElement.options[0].selected = true;
- }
+  };
 
+  const attributeValueSelected = (e) => {
+    if (e.target.value !== "Choose attribute value") {
+      setAttributesTableWrapper(
+        attrKey.current.value,
+        e.target.value,
+        setAttributesTable
+      );
+    }
+  };
 
- const attributeValueSelected = (e) => {
-  if (e.target.value !== "Choose attribute value") {
-      setAttributesTableWrapper(attrKey.current.value, e.target.value, setAttributesTable);
-  }
-}
+  const deleteAttribute = (key) => {
+    setAttributesTable((table) => table.filter((item) => item.key !== key));
+  };
 
+  //set NewAttrKey = input
+  const newAttrKeyHandler = (e) => {
+    e.preventDefault();
+    setNewAttrKey(e.target.value);
+    addNewAttributeManually(e);
+  };
+  //set NewAttrVal = input
+  const newAttrValueHandler = (e) => {
+    e.preventDefault();
+    setNewAttrValue(e.target.value);
+    addNewAttributeManually(e);
+  };
+
+  //add custom attr update to redux and db
+  const addNewAttributeManually = (e) => {
+    console.log(e.keyCode);
+    if (e.keyCode && e.keyCode === 13) {
+      if (newAttrKey && newAttrValue) {
+        reduxDispatch(
+          saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChoosen)
+        );
+        setAttributesTableWrapper(newAttrKey, newAttrValue, setAttributesTable);
+        console.log('categories real ',categories);
+        e.target.value = "";
+        createNewAttrKey.current.value = "";
+        createNewAttrVal.current.value = "";
+        setTimeout(() => {
+          const { categories } = useSelector((state) => state.getCategories);
+          setNewAttrKey(false);
+          setNewAttrValue(false);
+          console.log('categories real 2 ',categories);
+        },1000)
+        
+      }
+    }
+  };
 
   return (
     <Container>
@@ -184,14 +238,22 @@ const AdminCreateProductPageComponent = ({
             <Form.Group className="mb-3" controlId="formBasicCategory">
               <Form.Label>
                 Category
-                <CloseButton onClick={deleteCategoryHandler} />(<small>Press X for deleting this category</small>)
+                <CloseButton onClick={deleteCategoryHandler} />(
+                <small>Press X for deleting this category</small>)
               </Form.Label>
               <Form.Select
                 required
                 name="category"
                 aria-label="Default select example"
                 id="cats"
-                onChange={(e)=>changeCategory( e,categories,setAttributesFromDb,setCategoryChoosen)}
+                onChange={(e) =>
+                  changeCategory(
+                    e,
+                    categories,
+                    setAttributesFromDb,
+                    setCategoryChoosen
+                  )
+                }
               >
                 <option value="">Choose category</option>
                 {categories.map((category, idx) => (
@@ -212,69 +274,77 @@ const AdminCreateProductPageComponent = ({
                 type="text"
               />
             </Form.Group>
-                  
-                  {attributesFromDb.length>0 && (
-                    <Row className="mt-5">
-              <Col md={6}>
-                <Form.Group className="mb-3" controlId="formBasicAttributes">
-                  <Form.Label>Choose atrribute and set value</Form.Label>
-                  <Form.Select
-                    name="attrKey"
-                    aria-label="Default select example"
-                    ref={attrKey}
-                    onChange={(e)=>setValuesForAttrFromDbSelectForm(e, attrVal, attributesFromDb)}
+
+            {attributesFromDb.length > 0 && (
+              <Row className="mt-5">
+                <Col md={6}>
+                  <Form.Group className="mb-3" controlId="formBasicAttributes">
+                    <Form.Label>Choose atrribute and set value</Form.Label>
+                    <Form.Select
+                      name="attrKey"
+                      aria-label="Default select example"
+                      ref={attrKey}
+                      onChange={(e) =>
+                        setValuesForAttrFromDbSelectForm(
+                          e,
+                          attrVal,
+                          attributesFromDb
+                        )
+                      }
                     >
-                    <option>Choose attribute</option>
-                    {attributesFromDb.map((item,idx)=>{
-                      return(
-                      <Fragment key={idx}>
-                          <option value={item.key}>{item.key}</option>
-                        </Fragment>
-                      )
-                    })}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group
-                  className="mb-3"
-                  controlId="formBasicAttributeValue"
-                >
-                  <Form.Label>Attribute value</Form.Label>
-                  <Form.Select
-                    name="attrVal"
-                    aria-label="Default select example"
-                    ref={attrVal}
-                    onChange={attributeValueSelected}
+                      <option>Choose attribute</option>
+                      {attributesFromDb.map((item, idx) => {
+                        return (
+                          <Fragment key={idx}>
+                            <option value={item.key}>{item.key}</option>
+                          </Fragment>
+                        );
+                      })}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group
+                    className="mb-3"
+                    controlId="formBasicAttributeValue"
                   >
-                    <option>Choose attribute value</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
-                  )}
+                    <Form.Label>Attribute value</Form.Label>
+                    <Form.Select
+                      name="attrVal"
+                      aria-label="Default select example"
+                      ref={attrVal}
+                      onChange={attributeValueSelected}
+                    >
+                      <option>Choose attribute value</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+              </Row>
+            )}
             <Row>
-            {attributesTable.length > 0 && (
-              <Table hover>
-                <thead>
-                  <tr>
-                    <th>Attribute</th>
-                    <th>Value</th>
-                    <th>Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {attributesTable.map((item, idx) => (
+              {attributesTable.length > 0 && (
+                <Table hover>
+                  <thead>
+                    <tr>
+                      <th>Attribute</th>
+                      <th>Value</th>
+                      <th>Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attributesTable.map((item, idx) => (
                       <tr key={idx}>
                         <td>{item.key}</td>
                         <td>{item.value}</td>
                         <td>
-                          <CloseButton />
+                          <CloseButton
+                            onClick={() => deleteAttribute(item.key)}
+                          />
                         </td>
                       </tr>
                     ))}
-                    </tbody>
-              </Table>
+                  </tbody>
+                </Table>
               )}
             </Row>
 
@@ -283,10 +353,12 @@ const AdminCreateProductPageComponent = ({
                 <Form.Group className="mb-3" controlId="formBasicNewAttribute">
                   <Form.Label>Create new attribute</Form.Label>
                   <Form.Control
+                    ref={createNewAttrKey}
                     disabled={["", "Choose category"].includes(categoryChoosen)}
                     placeholder="choose or create category"
-                    name="newAttrValue"
+                    name="newAttrKey"
                     type="text"
+                    onKeyUp={newAttrKeyHandler}
                   />
                 </Form.Group>
               </Col>
@@ -299,15 +371,17 @@ const AdminCreateProductPageComponent = ({
                   <Form.Control
                     disabled={categoryChoosen === "Choose category"}
                     placeholder="first choose or create category"
-                    required={true}
+                    required={newAttrKey}
                     name="newAttrValue"
                     type="text"
+                    ref={createNewAttrVal}
+                    onKeyUp={newAttrValueHandler}
                   />
                 </Form.Group>
               </Col>
             </Row>
 
-            <Alert variant="primary">
+            <Alert show={newAttrKey && newAttrValue ? true : false} variant="primary">
               After typing attribute key and value press enter on one of the
               field
             </Alert>
