@@ -198,6 +198,13 @@ const AdminCreateProductPageComponent = ({
     }
   };
 
+  //prevent submit form when user press enter
+  const checkKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault()
+    };
+  };
+
   return (
     <Container>
       <Row className="justify-content-md-center mt-5">
@@ -209,7 +216,7 @@ const AdminCreateProductPageComponent = ({
 
         <Col md={6}>
           <h1>Create a new product</h1>
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Form noValidate validated={validated} onSubmit={handleSubmit} onKeyDown={(e)=>checkKeyDown(e)}>
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
               <Form.Control name="name" required type="text" />
