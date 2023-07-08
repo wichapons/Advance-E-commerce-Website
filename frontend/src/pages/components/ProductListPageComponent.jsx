@@ -79,6 +79,40 @@ const resetFilters = () => {
   window.location.href = "/product-list";
 }
 
+//display attribute list based on selectecd category in filter section
+useEffect(() => {
+  // Check if categoriesFromFilter is not empty
+  if (Object.entries(categoriesFromFilter).length > 0) {
+    // Reset attrsFilter state
+    setAttrsFilter([]);
+    // Initialize an array to store the unique category names
+    let cat = [];
+    // Variable to store the count of occurrences of a category name
+    let count;
+    // Iterate over each category and its checked status
+    Object.entries(categoriesFromFilter).forEach(([category, checked]) => {
+      if (checked) {
+        // Get the main category name
+        let name = category.split("/")[0];
+        // Add the main category name to the cat array
+        cat.push(name);
+        // Count the occurrences of the main category name in the cat array
+        count = cat.filter((x) => x === name).length;
+        // If it's the first occurrence of the main category name, add its attrs to attrsFilter
+        if (count === 1) {
+          // Find the index of the main category in the categories array
+          let index = categories.findIndex((item) => item.name === name);
+          
+          // Add the attrs of the main category to the attrsFilter state
+          setAttrsFilter((attrs) => [...attrs, ...categories[index].attrs]);
+        }
+      }
+    });
+  }
+}, [categoriesFromFilter, categories]);
+
+
+
 
   return (
     <Container fluid>
