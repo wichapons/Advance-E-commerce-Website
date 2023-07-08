@@ -161,7 +161,7 @@ const getUserProfile = async (req, res, next) => {
 const createReview = async (req, res, next) => {
   try {
     const session = await Review.startSession(); //create transactionsal process
-
+    
     // get comment, rating from request.body
     const { comment, rating } = req.body;
     // validate request
@@ -172,13 +172,13 @@ const createReview = async (req, res, next) => {
     // create review id manually because it is needed also for saving in Product collection
     const ObjectId = require("mongodb").ObjectId;
     let reviewId = new ObjectId();
-
+    
     session.startTransaction(); //begin transaction process here if something error everything will revert
     await Review.create([
       {
         _id: reviewId,
         comment: comment,
-        rating: Number(rating),
+        rating: parseInt(rating),
         user: {
           _id: req.user._id,
           name: req.user.name + " " + req.user.lastName,
@@ -221,11 +221,11 @@ const createReview = async (req, res, next) => {
       // Calculate the sum of ratings
       const totalRatings = productReviewDoc
         .map((item) => {
-          Number(item.rating);
+          return Number(item.rating);
         })
         .reduce((sum, item) => {
-          sum + item, 0;
-        });
+          return sum + item;
+        }, 0);
 
       // Calculate the average rating
       const averageRating = totalRatings / product.reviews.length;
@@ -237,7 +237,7 @@ const createReview = async (req, res, next) => {
     await session.commitTransaction();//comfirm transaction no revert will occure
 
     session.endSession();
-    res.send("review created");
+    res.json("review created");
   } catch (err) {
     next(err);
   }
