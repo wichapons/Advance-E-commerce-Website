@@ -52,9 +52,11 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/product-list" element={<ProductListPage />} />
+          <Route path="/product-list/category/:categoryName" element={<ProductListPage />} />
           <Route path="/product-details/:id" element={<ProductDetailsPage />} />
           <Route path="/register" element={<RegistrationPage />} />
+          <Route path="*" element="Page not exists 404" />
+
 
           {/* user protected routes */}
           <Route element={<ProtectedRoutesComponents />}>
