@@ -15,11 +15,13 @@ const ProductListPageComponent = ({ getProducts,categories }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [attrsFilter, setAttrsFilter] = useState([]);
-  //state for save data from selected filter option from a user
-  const [attrsFromFilter, setAttrsFromFilter] = useState([]);
-
-  console.log(attrsFromFilter);
+  const [attrsFilter, setAttrsFilter] = useState([]); // collect category attributes from db and show on the webpage
+  const [attrsFromFilter, setAttrsFromFilter] = useState([]);// collect user filters for category attributes
+  const [showResetFiltersButton, setShowResetFiltersButton] = useState(false);
+  const [filters, setFilters] = useState({});
+  const [price, setPrice] = useState(500);
+  const [ratingsFromFilter, setRatingsFromFilter] = useState({});
+  const [categoriesFromFilter, setCategoriesFromFilter] = useState({});
 
 
   //get cat name from params
@@ -36,7 +38,8 @@ const ProductListPageComponent = ({ getProducts,categories }) => {
         console.log(er);
         setError(true);
       });
-  }, []);
+      console.log(filters);
+  }, [filters]);
 
   //get category data and attribute
   useEffect(() => {
@@ -55,10 +58,26 @@ const ProductListPageComponent = ({ getProducts,categories }) => {
         }
     } else {
         setAttrsFilter([]);
-
-
     }
 }, [categoryName, categories])
+
+//show product based on submit selected filter
+const handleFilters = () => {
+  setShowResetFiltersButton(true);
+  setFilters({
+    price:price,
+    attrs: attrsFromFilter,
+    rating: ratingsFromFilter,
+    categtory:categoriesFromFilter
+  })
+}
+
+//reset product
+const resetFilters = () => {
+  setShowResetFiltersButton(false);
+  setFilters({});
+  window.location.href = "/product-list";
+}
 
 
   return (
@@ -70,20 +89,24 @@ const ProductListPageComponent = ({ getProducts,categories }) => {
               <SortOptionsComponent />
             </ListGroup.Item>
             <ListGroup.Item>
-              <PriceFilterComponent />
+              <PriceFilterComponent price={price} setPrice={setPrice} />
             </ListGroup.Item>
             <ListGroup.Item>
-              <RatingFilterComponent />
+              <RatingFilterComponent setRatingsFromFilter={setRatingsFromFilter}/>
             </ListGroup.Item>
             <ListGroup.Item>
-              <CategoryFilterComponent />
+              <CategoryFilterComponent setCategoriesFromFilter={setCategoriesFromFilter} />
             </ListGroup.Item>
             <ListGroup.Item>
               <AttributesFilterComponent attrsFilter={attrsFilter} setAttrsFromFilter={setAttrsFromFilter}/>
             </ListGroup.Item>
             <ListGroup.Item>
-              <Button variant="primary">Filter</Button>{" "}
-              <Button variant="danger">Reset Filter</Button>
+              <Button variant="primary"  onClick={handleFilters}>Filter</Button>{" "}
+              {showResetFiltersButton && (
+                <Button variant="danger" onClick={resetFilters} >Reset Filter</Button>
+              )}
+
+              
             </ListGroup.Item>
           </ListGroup>
         </Col>
