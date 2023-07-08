@@ -7,13 +7,25 @@ import RatingFilterComponent from "../../components/filterQueryResultOptions/Rat
 import CategoryFilterComponent from "../../components/filterQueryResultOptions/CategoryFilterComponent";
 import AttributesFilterComponent from "../../components/filterQueryResultOptions/AttributesFilterComponent.jsx";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const ProductListPageComponent = ({ getProducts }) => {
+const ProductListPageComponent = ({ getProducts,categories }) => {
+  
   //create state for list of products from db
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [attrsFilter, setAttrsFilter] = useState([]);
+  //state for save data from selected filter option from a user
+  const [attrsFromFilter, setAttrsFromFilter] = useState([]);
 
+  console.log(attrsFromFilter);
+
+
+  //get cat name from params
+  const { categoryName } = useParams() || "";
+
+  //get product list
   useEffect(() => {
     getProducts()
       .then((products) => {
@@ -25,6 +37,29 @@ const ProductListPageComponent = ({ getProducts }) => {
         setError(true);
       });
   }, []);
+
+  //get category data and attribute
+  useEffect(() => {
+    if (categoryName) {
+      // Find the categoryAllData object in the categories array
+        let categoryAllData = categories.find((item) => item.name === categoryName.replaceAll(",", "/"));
+    
+        // If categoryAllData exists
+        if (categoryAllData) {
+          // Get the main category from the categoryAllData's name
+            let mainCategory = categoryAllData.name.split("/")[0];
+            // Find the index of the main category in the categories array
+            let index = categories.findIndex((item) => item.name === mainCategory);
+            // Set the attrsFilter state to the attrs of the main category
+            setAttrsFilter(categories[index].attrs);
+        }
+    } else {
+        setAttrsFilter([]);
+
+
+    }
+}, [categoryName, categories])
+
 
   return (
     <Container fluid>
@@ -44,7 +79,7 @@ const ProductListPageComponent = ({ getProducts }) => {
               <CategoryFilterComponent />
             </ListGroup.Item>
             <ListGroup.Item>
-              <AttributesFilterComponent />
+              <AttributesFilterComponent attrsFilter={attrsFilter} setAttrsFromFilter={setAttrsFromFilter}/>
             </ListGroup.Item>
             <ListGroup.Item>
               <Button variant="primary">Filter</Button>{" "}
