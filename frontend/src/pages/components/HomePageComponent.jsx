@@ -1,37 +1,31 @@
 import ProductCarouselComponent from "../../components/ProductCarouselComponent";
 import CategoryCardComponent from "../../components/CategoryCardComponent";
-import { Container,Row } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
+import { useEffect, useState } from "react";
 
-const HomePageComponent = () => {
-  const categories = [
-    "Tablets",
-    "Monitors",
-    "Games",
-    "Printers",
-    "Software",
-    "Cameras",
-    "Books",
-    "Videos",
-  ];
+const HomePageComponent = ({ categories }) => {
+  const [mainCategories, setMainCategories] = useState([]);
 
-  const images = [
-    "/images/tablets-category.png",
-    "/images/monitors-category.png",
-    "/images/games-category.png",
-    "/images/tablets-category.png",
-    "/images/tablets-category.png",
-    "/images/tablets-category.png",
-    "/images/tablets-category.png",
-    "/images/tablets-category.png",
-  ];
+  //render only main category
+  useEffect(() => {
+    setMainCategories((cat) =>
+        //remove category that incl "/" from being rendered
+      categories.filter((item) => !item.name.includes("/"))
+    );
+  }, [categories]);
+
+  console.log(categories);
 
   return (
     <>
       <ProductCarouselComponent />
       <Container>
-        <Row xs={1} md={2} className="g-4 mt-4" >
-          {categories.map((category,index) => (
-            <CategoryCardComponent key={index} category={categories[index]} src={images[index]}  />
+        <Row xs={1} md={2} className="g-4 mt-4">
+          {mainCategories.map((category, index) => (
+            <CategoryCardComponent
+              key={index}
+              category={category}
+            />
           ))}
         </Row>
       </Container>

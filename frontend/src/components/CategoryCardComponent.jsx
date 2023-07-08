@@ -1,17 +1,17 @@
 import { Card, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
-const CategoryCardComponent = (props) => {
+const CategoryCardComponent = ({category,idx}) => {
+  
   return (
     <Card>
-      <Card.Img crossOrigin="annonymous" variant="top" src={props.src} />
+      <Card.Img crossOrigin="annonymous" variant="top" src={category.imagePath ? category.imagePath : null } />
       <Card.Body>
-        <Card.Title>{props.category}</Card.Title>
+        <Card.Title>{category.name}</Card.Title>
         <Card.Text>
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
+          {category.description}
         </Card.Text>
-        <LinkContainer to={"/product-list"}>
+        <LinkContainer to={`/product-list/category/${category.name}`}>
           <Button variant="primary">View</Button>
         </LinkContainer>
       </Card.Body>
