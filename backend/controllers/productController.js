@@ -22,9 +22,10 @@ const getProducts = async (req, res, next) => {
     const searchTextQuery = req.params.searchTextQuery;
     let searchTextQueryCondition = {};
     let select = {};
+    let sort ={};
     if(searchTextQuery) {
       searchTextQueryCondition = { $text: { $search: searchTextQuery}};  //search by $text index which we already assign in the product model
-      select = {score: { $meta: "textscore" }}; // {score: { $meta: "textscore" }}; fixed term for get the search score based on user input
+      select = {score: { $meta: "textScore" }}; // {score: { $meta: "textscore" }}; fixed term for get the search score based on user input
       sort = { score: { $meta: "textScore" } };// sort by score
       queryConditions.push(searchTextQueryCondition);
     }  
@@ -39,7 +40,6 @@ const getProducts = async (req, res, next) => {
     }
 
     // Sort logic (by name, price etc.)
-    let sort;
     const sortOption = req.query.sort;
     if (sortOption) {
       let sortOpt = sortOption.split("_"); //frontend will send format like  value="price_1"
