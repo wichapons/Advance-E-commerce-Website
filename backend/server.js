@@ -13,6 +13,12 @@ const apiRoutes = require("./routes/apiRoutes");
 const fileUpload = require("express-fileupload");
 //Cookie
 const cookieParser = require("cookie-parser");
+//socket.io
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const httpServer = createServer(app);
+global.io = new Server(httpServer,{cors: {origin: "*"}});
+
 
 app.use(fileUpload());
 app.use(cookieParser());
@@ -36,6 +42,10 @@ app.use((error, req, res, next) => {
 });
 
 //Start server
+/*
 app.listen(process.env.PORT, () => {
   console.log(`Server started successfully on port ${process.env.PORT}`)
-})
+})*/
+
+//start server with socket.io
+httpServer.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
