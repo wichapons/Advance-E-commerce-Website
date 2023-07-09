@@ -229,9 +229,10 @@ const createReview = async (req, res, next) => {
 
       // Calculate the average rating
       const averageRating = totalRatings / product.reviews.length;
+      const roundedAverageRating = Math.round(averageRating)
 
       // Update the product's rating with the average
-      product.rating = averageRating;
+      product.rating = roundedAverageRating;
     }
     await product.save();
     await session.commitTransaction();//comfirm transaction no revert will occure
