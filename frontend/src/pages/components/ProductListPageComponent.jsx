@@ -7,7 +7,7 @@ import RatingFilterComponent from "../../components/filterQueryResultOptions/Rat
 import CategoryFilterComponent from "../../components/filterQueryResultOptions/CategoryFilterComponent";
 import AttributesFilterComponent from "../../components/filterQueryResultOptions/AttributesFilterComponent.jsx";
 import { useEffect, useState } from "react";
-import { useParams,useLocation  } from "react-router-dom";
+import { useParams,useLocation, useNavigate  } from "react-router-dom";
 
 const ProductListPageComponent = ({ getProducts,categories }) => {
   
@@ -23,20 +23,26 @@ const ProductListPageComponent = ({ getProducts,categories }) => {
   const [ratingsFromFilter, setRatingsFromFilter] = useState({});
   const [categoriesFromFilter, setCategoriesFromFilter] = useState({});
   const [sortOption, setSortOption] = useState("");
+  const [paginationLinksNumber, setPaginationLinksNumber] = useState(null);
+  const [pageNum, setPageNum] = useState(null);
 
   //get cat name from params
   const { categoryName } = useParams() || "";
-  const { pageNumParam } = useParams() || "";
+  const { pageNumParam } = useParams() || 1; //default page number
   const { searchQuery } = useParams() || "";
 
   const location = useLocation();
+  const navigate = useNavigate();
+
 
 
   //get product list
-  useEffect((categoryName, pageNumParam, searchQuery, filters, sortOption) => {
-    getProducts()
+  useEffect(() => {
+    getProducts(categoryName, pageNumParam, searchQuery, filters, sortOption)
       .then((products) => {
         setProducts(products.products);
+        setPaginationLinksNumber(products.paginationLinksNumber);
+        setPageNum(products.pageNum);
         setLoading(false);
       })
       .catch((er) => {
@@ -68,14 +74,16 @@ const ProductListPageComponent = ({ getProducts,categories }) => {
 
 //show product based on submit selected filter
 const handleFilters = () => {
+  //navigate(location.pathname.replace(/\/[0-9]+$/, "")); //redirect to first page of pagination when user click filter button
   setShowResetFiltersButton(true);
   setFilters({
     price:price,
     attrs: attrsFromFilter,
     rating: ratingsFromFilter,
     categtory:categoriesFromFilter
-  })
-}
+  });
+
+};
 
 //reset product
 const resetFilters = () => {
@@ -171,7 +179,14 @@ useEffect(() => {
             ))
           )}
 
-          <PaginationComponent />
+          {paginationLinksNumber > 1 ? (
+            <PaginationComponent
+              categoryName={categoryName}
+              searchQuery={searchQuery}
+              paginationLinksNumber={paginationLinksNumber}
+              pageNum={pageNum}
+            />
+          ) : null}
         </Col>
       </Row>
     </Container>
