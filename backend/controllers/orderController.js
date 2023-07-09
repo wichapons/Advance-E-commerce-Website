@@ -94,10 +94,10 @@ const getAllOrdersAdmin = async (req, res, next) => {
 
 const getOrderForAnalysis = async (req, res, next) => {
     try {
-        const start = new Date(req.params.date);
-        start.setHours(0, 0, 0, 0); //start from 0 am
-        const end = new Date(req.params.date);
-        end.setHours(23, 59, 59, 999); // end at 11.59pm
+        const date = new Date(req.params.date);
+        const timezoneOffset = date.getTimezoneOffset();
+        const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, -timezoneOffset, 0, 0);
+        const end = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59 - timezoneOffset, 59, 999);
 
         const order = await Order.find({
             createdAt: {
