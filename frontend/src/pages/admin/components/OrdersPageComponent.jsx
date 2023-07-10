@@ -44,7 +44,7 @@ const OrdersPageComponent = ({ getOrders }) => {
                     {order.user.name} {order.user.lastName}
                   </td>
                 ) : <td>cannot fetch name</td>}
-                <td>{order.createdAt.substring(0,10)}</td>
+                <td>{order.createdAt ? order.createdAt.substring(0, 10) : 'N/A'}</td>
                 <td>{order.orderTotal.cartSubtotal}</td>
                 <td>
                   {order.isDelivered ? (
