@@ -65,6 +65,8 @@ useEffect(() => {
   if (userInfo.isAdmin) {
       let audio = new Audio("/audio/chat-msg.mp3");
       const socket = io('http://localhost:5000');
+      //send signal via socket io then admin is online, random number is for telling server how many admins are currently online 
+      socket.emit("admin connected with server", "Admin" + Math.floor(Math.random() * 1000000000000));
       socket.on("server sends message from client to admin", ({message}) => {
         dispatch(setSocket(socket));
         dispatch(setChatRooms("exampleUser", message)); //send to redux action named setChatRooms

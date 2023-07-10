@@ -19,20 +19,42 @@ const { Server } = require("socket.io");
 const httpServer = createServer(app);
 global.io = new Server(httpServer,{cors: {origin: "*"}});
 
+const admins = [];
 //set up an event listener for the "connection" event.
 io.on("connection", (socket) => {
   //listen message from client then send to admin
   socket.on("client sends message", (msg) => {
-    //send msg recieve from client to admin
-    socket.broadcast.emit("server sends message from client to admin", {
-      message: msg, 
-   })
-  })
+    //if no admin online send back response
+    if (admins.length === 0) {
+      socket.emit("no admin", "");
+    } else {
+      //broadcast send msg to all of reciver at destination, which are admins in this case
+      socket.broadcast.emit("server sends message from client to admin", {
+        message: msg,
+      });
+    }
+  });
+
   //listen message from admin then send to clients
   socket.on("admin sends message", ({ message }) => {
     socket.broadcast.emit("server sends message from admin to client", message);
 })
-})
+  //listen signal whether admin is online or not
+socket.on("admin connected with server", (adminName) => {
+  console.log("admin connected with server");
+  admins.push({ id: socket.id, admin: adminName });
+  console.log(admins);
+});
+
+//For get disconnect signal from admin logout
+socket.on("disconnect", (reason) => {
+  //find disconnected admin in the admins index and remove them 
+  const removeIndex = admins.findIndex((item) => item.id === socket.id);
+  if (removeIndex !== -1) {
+    admins.splice(removeIndex, 1);
+  }
+});
+});
 
 
 

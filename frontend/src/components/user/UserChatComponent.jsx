@@ -18,8 +18,12 @@ useEffect(() => {
     let audio = new Audio("/audio/chat-msg.mp3");
     // Create a socket instance
     const socket = io('http://localhost:5000');
-    setSocket(socket);
-    
+    //listen to "no admin" signal from socket.io
+    socket.on("no admin", (msg) => {
+      setChat((chat) => {
+          return [...chat, { admin: "All admins are offline, please leave your messages and we will get back to you soon" }];
+      })
+  })
     // Listen for "server sends message from admin to client" event
     socket.on("server sends message from admin to client", (msg) => {
       // Update the chat state with the received admin message
@@ -31,6 +35,7 @@ useEffect(() => {
       const chatMessages = document.querySelector(".cht-msg");
       chatMessages.scrollTop = chatMessages.scrollHeight;
     });
+    setSocket(socket);
     // Clean up function to disconnect the socket
     return () => {
       socket.disconnect();
