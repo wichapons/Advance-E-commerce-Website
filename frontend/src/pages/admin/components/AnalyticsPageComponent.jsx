@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 const AdminAnalyticsPageComponent = ({
   fetchOrdersForFirstDate,
   fetchOrdersForSecondDate,
+  socketIOClient,
 }) => {
   let previousDay = new Date();
   previousDay.setDate(previousDay.getDate() - 1);
@@ -45,7 +46,6 @@ const AdminAnalyticsPageComponent = ({
     // Fetch orders data for the first date to compare
     fetchOrdersForFirstDate(abctrl, firstDateToCompare)
       .then((data) => {
-        console.log(data);
         let orderSum = 0;
         // Process the fetched orders data
         const orders = data.map((order) => {
@@ -95,6 +95,100 @@ const AdminAnalyticsPageComponent = ({
     // Clean up function to abort the fetch if the component unmounts or the dependency values change
     return () => abctrl.abort();
   }, [firstDateToCompare, secondDateToCompare]);
+
+  useEffect(() => {
+    // Create a socket instance
+    const socket = socketIOClient("http://localhost:5000");
+    
+    // Get today's date
+    let today = new Date().toDateString();
+
+    // Define the event handler for "newOrder" event
+    const handler = (newOrder) => {
+      // Get the order date
+      let orderDate = new Date(newOrder.createdAt).toLocaleString("en-US", {
+        hour: "numeric",
+        hour12: true,
+        timeZone: "UTC",
+      });
+
+      // Check if the new order is from today
+      if (new Date(newOrder.createdAt).toDateString() === today) {
+        // Check if today matches the first date to compare
+        if (today === new Date(firstDateToCompare).toDateString()) {
+          // Update the data for the first date
+          setDataForFirstSet((prev) => {
+            if (prev.length === 0) {
+              // If the data is empty, create a new entry
+              return [
+                {
+                  name: orderDate,
+                  [firstDateToCompare]: newOrder.orderTotal.cartSubtotal,
+                },
+              ];
+            }
+            let length = prev.length;
+            if (prev[length - 1].name === orderDate) {
+              // If the order date matches the last entry, update the existing entry
+              prev[length - 1][firstDateToCompare] +=
+                newOrder.orderTotal.cartSubtotal;
+              return [...prev];
+            } else {
+              // If the order date is different, create a new entry
+              let lastElem = {
+                name: orderDate,
+                [firstDateToCompare]:
+                  prev[length - 1][firstDateToCompare] +
+                  newOrder.orderTotal.cartSubtotal,
+              };
+              return [...prev, lastElem];
+            }
+          });
+        } else if (today === new Date(secondDateToCompare).toDateString()) {
+          // Check if today matches the second date to compare
+          // Update the data for the second date
+          setDataForSecondSet((prev) => {
+            if (prev.length === 0) {
+              // If the data is empty, create a new entry
+              return [
+                {
+                  name: orderDate,
+                  [secondDateToCompare]: newOrder.orderTotal.cartSubtotal,
+                },
+              ];
+            }
+            let length = prev.length;
+            if (prev[length - 1].name === orderDate) {
+              // If the order date matches the last entry, update the existing entry
+              prev[length - 1][secondDateToCompare] +=
+                newOrder.orderTotal.cartSubtotal;
+              return [...prev];
+            } else {
+              // If the order date is different, create a new entry
+              let lastElem = {
+                name: orderDate,
+                [secondDateToCompare]:
+                  prev[length - 1][secondDateToCompare] +
+                  newOrder.orderTotal.cartSubtotal,
+              };
+              return [...prev, lastElem];
+            }
+          });
+        }
+      }
+    };
+
+    // Listen for "newOrder" event
+    socket.on("newOrder", handler);
+
+    // Disconnect socket when user leave the page
+    return () => socket.off("newOrder", handler);
+  }, [
+    setDataForFirstSet,
+    setDataForSecondSet,
+    firstDateToCompare,
+    secondDateToCompare,
+  ]);
 
   return (
     <Row className="m-5">

@@ -49,5 +49,14 @@ const orderSchema = mongoose.Schema({
     timestamps: true,
 })
 
-const Order = mongoose.model("Order", orderSchema)
+const Order = mongoose.model("Order", orderSchema);
+//monitor order data by socket.io
+Order.watch().on("change", (data) => {
+    // Check if the operation type is "insert"
+    if (data.operationType === "insert") {
+      // Emit a socket event to notify about the new order
+      io.emit("newOrder", data.fullDocument);
+    }
+  });
+  
 module.exports = Order
