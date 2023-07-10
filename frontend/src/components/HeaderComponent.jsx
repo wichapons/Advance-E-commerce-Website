@@ -15,7 +15,7 @@ import { useEffect,useState } from "react";
 import { getCategories } from "../redux/actions/categoryActions";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import { setChatRooms,setSocket } from "../redux/actions/chatActions";
+import { setChatRooms,setSocket,setMessageReceived } from "../redux/actions/chatActions";
 
 const HeaderComponent = () => {
   //import redux state
@@ -29,6 +29,8 @@ const HeaderComponent = () => {
   const [searchCategoryToggle, setSearchCategoryToggle] = useState("All");
   //for sending to backend
   const [searchQuery, setSearchQuery] = useState("");
+  //get messageReceived data from redux state
+  const { messageReceived } = useSelector((state) => state.adminChat);
 
   const navigate = useNavigate();
 
@@ -61,11 +63,17 @@ const HeaderComponent = () => {
 //get msg from socketio server
 useEffect(() => {
   if (userInfo.isAdmin) {
+      let audio = new Audio("/audio/chat-msg.mp3");
       const socket = io('http://localhost:5000');
       socket.on("server sends message from client to admin", ({message}) => {
         dispatch(setSocket(socket));
         dispatch(setChatRooms("exampleUser", message)); //send to redux action named setChatRooms
+        dispatch(setMessageReceived(true));  
+        audio.play();
       })
+      return ()=>{
+        socket.disconnect();
+      }
   }
 },[userInfo.isAdmin])
 
@@ -133,7 +141,7 @@ useEffect(() => {
                 <Nav.Link>
                   Admin
                   {/* red dot for inform admin that there are chat msg from cust.  */}
-                  <span className="position-absolute top-1 start-10 translate-middle p-2 bg-danger border border-light rounded-circle "></span>
+                  {messageReceived && <span className="position-absolute top-1 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>}
                 </Nav.Link>
               </LinkContainer>
             ) : (

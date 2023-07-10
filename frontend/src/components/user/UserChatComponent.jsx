@@ -15,6 +15,7 @@ const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 useEffect(() => {
   // Establish a socket connection only for non-admin users
   if (!userInfo.isAdmin) {
+    let audio = new Audio("/audio/chat-msg.wav");
     // Create a socket instance
     const socket = io('http://localhost:5000');
     setSocket(socket);
@@ -25,6 +26,8 @@ useEffect(() => {
       setChat((chat) => [...chat, { admin: msg }]);
       // Scroll to the bottom of the chat messages container
       setMessageReceived(true);
+      //play pop sound when msg arrived
+      audio.play();
       const chatMessages = document.querySelector(".cht-msg");
       chatMessages.scrollTop = chatMessages.scrollHeight;
     });
