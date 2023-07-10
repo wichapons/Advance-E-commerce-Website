@@ -31,7 +31,8 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socket, socketUser }) => 
     chatRoom[1].push({ admin: msg.value });
     //send msg back to client
     socket.emit("admin sends message", {
-      message: v,
+      user:socketUser,
+      message: v
   })
     // Trigger a re-render by updating the state
     setRerender(!rerender);

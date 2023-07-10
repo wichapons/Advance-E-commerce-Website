@@ -20,20 +20,38 @@ const httpServer = createServer(app);
 global.io = new Server(httpServer,{cors: {origin: "*"}});
 
 const admins = [];
+let activeChats = [];
+
+function get_random(array) {
+   return array[Math.floor(Math.random() * array.length)]; 
+}
 //set up an event listener for the "connection" event.
 io.on("connection", (socket) => {
   //listen message from client then send to admin
   socket.on("client sends message", (msg) => {
     //if no admin online send back response
     if (admins.length === 0) {
+      // If there are no admins available
       socket.emit("no admin", "");
     } else {
-      //broadcast send msg to all of reciver at destination, which are admins in this case
-      socket.broadcast.emit("server sends message from client to admin", {
+      let client = activeChats.find((client) => client.clientId === socket.id);
+      let targetAdminId;
+      if (client) {
+        // If the client already has an active chat
+        targetAdminId = client.adminId;
+      } else {
+        // If the client doesn't have an active chat, assign a random admin
+        let admin = get_random(admins);
+        activeChats.push({ clientId: socket.id, adminId: admin.id });
+        targetAdminId = admin.id;
+      }
+      // Emit the message from client to the target admin
+      socket.broadcast.to(targetAdminId).emit("server sends message from client to admin", {
+        user: socket.id,
         message: msg,
       });
-    }
-  });
+    }})
+    
 
   //listen message from admin then send to clients
   socket.on("admin sends message", ({ message }) => {
@@ -41,9 +59,7 @@ io.on("connection", (socket) => {
 })
   //listen signal whether admin is online or not
 socket.on("admin connected with server", (adminName) => {
-  console.log("admin connected with server");
   admins.push({ id: socket.id, admin: adminName });
-  console.log(admins);
 });
 
 //For get disconnect signal from admin logout
