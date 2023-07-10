@@ -1,7 +1,78 @@
 import "../../chat.css";
+import { io } from "socket.io-client";
+import { useState,useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const UserChatComponent = () => {
+  
+const [socket, setSocket] = useState(false);
+const [chat, setChat] = useState([]);
+//get userInfo from redux
+const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
+
+
+useEffect(() => {
+  // Establish a socket connection only for non-admin users
+  if (!userInfo.isAdmin) {
+    // Create a socket instance
+    const socket = io('http://localhost:5000');
+    setSocket(socket);
+    
+    // Listen for "server sends message from admin to client" event
+    socket.on("server sends message from admin to client", (msg) => {
+      // Update the chat state with the received admin message
+      setChat((chat) => [...chat, { admin: msg }]);
+      // Scroll to the bottom of the chat messages container
+      const chatMessages = document.querySelector(".cht-msg");
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+    // Clean up function to disconnect the socket
+    return () => {
+      socket.disconnect();
+    };
+  }
+}, [userInfo.isAdmin]);
+
+
+const clientSubmitChatMsg = (e) => {
+  // Check if the key pressed is not the Enter key
+  if (e.keyCode && e.keyCode !== 13) {
+    return;
+  }
+
+  
+  // Retrieve the input message value
+  const msg = document.getElementById("clientChatMsg");
+  let trimmedMsg = msg.value.trim();
+  
+  // Return early if the message is empty or falsy
+  if (!trimmedMsg) {
+    return;
+  }
+  
+  // Emit the "client sends message" event with the message value
+  socket.emit("client sends message", trimmedMsg);
+  
+  // Update the chat state with the new client message
+  setChat((chat) => {
+    return [...chat, { client: trimmedMsg }];
+  });
+  
+  // Reset the input value and focus on it
+  msg.value = "";
+  msg.focus();
+  
+  // Scroll to the bottom of the chat messages
+  setTimeout(() => {
+    const chatMessages = document.querySelector(".cht-msg");
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 200);
+};
+
+
+  
   return (
+    !userInfo.isAdmin ? (
     <>
       <input type="checkbox" id="checkbox" />
       <label className="chat-btn" htmlFor="checkbox">
@@ -15,31 +86,37 @@ const UserChatComponent = () => {
         </div>
         <div className="chat-form">
         <div className="cht-msg">
-            {Array.from({ length: 20 }).map((_, id) => {
+            {chat.map((item,id)=>{
               return(
                 <div key={id}>
-                <p>
-                  <b>You wrote:</b> Hello, world! This is a toast message.
+                {item.client && (
+                  <p>
+                  <b>You wrote:</b> {item.client}
                 </p>
-                <p className="bg-primary p-3 ms-4 text-light rounded-pill">
-                  <b>Support wrote:</b> Hello, world! This is a toast message.
+                )}
+                {item.admin && (
+                  <p className="bg-primary p-3 ms-4 text-light rounded-pill">
+                  <b>Support wrote:</b> {item.admin}
                 </p>
+                )}
+                
               </div>
               )
-            }
-            )}
+            })}
           </div>
           <textarea
+           onKeyDown={(e) => clientSubmitChatMsg(e)}
             id="clientChatMsg"
             className="form-control"
             placeholder="Your Text Message"
           ></textarea>
 
-          <button className="btn btn-success btn-block">Submit</button>
+          <button onClick={(e) => clientSubmitChatMsg(e)} className="btn btn-success btn-block">Submit</button>
         </div>
       </div>
     </>
-  );
+  ): null
+  )
 };
 
 export default UserChatComponent;

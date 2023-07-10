@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect,useState } from "react";
 import { getCategories } from "../redux/actions/categoryActions";
 import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
+import { setChatRooms,setSocket } from "../redux/actions/chatActions";
 
 const HeaderComponent = () => {
   //import redux state
@@ -55,6 +57,17 @@ const HeaderComponent = () => {
       navigate("/product-list");
   }
 }
+
+//get msg from socketio server
+useEffect(() => {
+  if (userInfo.isAdmin) {
+      const socket = io('http://localhost:5000');
+      socket.on("server sends message from client to admin", ({message}) => {
+        dispatch(setSocket(socket));
+        dispatch(setChatRooms("exampleUser", message)); //send to redux action named setChatRooms
+      })
+  }
+},[userInfo.isAdmin])
 
 
   return (
