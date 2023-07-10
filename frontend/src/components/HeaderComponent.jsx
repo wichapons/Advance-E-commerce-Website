@@ -15,7 +15,7 @@ import { useEffect,useState } from "react";
 import { getCategories } from "../redux/actions/categoryActions";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import { setChatRooms,setSocket,setMessageReceived } from "../redux/actions/chatActions";
+import { setChatRooms,setSocket,setMessageReceived,removeChatRoom } from "../redux/actions/chatActions";
 
 const HeaderComponent = () => {
   //import redux state
@@ -73,9 +73,11 @@ useEffect(() => {
         dispatch(setMessageReceived(true));  
         audio.play();
       })
-      return ()=>{
-        socket.disconnect();
-      }
+      //listen to disconected signal from backend
+      socket.on("disconnected", ({reason, socketId}) => {
+        dispatch(removeChatRoom(socketId));
+      })
+      return () => socket.disconnect();
   }
 },[userInfo.isAdmin])
 

@@ -8,6 +8,9 @@ const UserChatComponent = () => {
 const [socket, setSocket] = useState(false);
 const [chat, setChat] = useState([]);
 const [messageReceived, setMessageReceived] = useState(false);
+const [chatConnectionInfo, setChatConnectionInfo] = useState(false);
+const [reconnect, setReconnect] = useState(false);
+
 //get userInfo from redux
 const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 
@@ -15,6 +18,7 @@ const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 useEffect(() => {
   // Establish a socket connection only for non-admin users
   if (!userInfo.isAdmin) {
+    setReconnect(false);
     let audio = new Audio("/audio/chat-msg.mp3");
     // Create a socket instance
     const socket = io('http://localhost:5000');
@@ -36,6 +40,13 @@ useEffect(() => {
       chatMessages.scrollTop = chatMessages.scrollHeight;
     });
     setSocket(socket);
+    //listen to admin closed chat then send the response message
+    socket.on("admin closed chat", () => {
+      setChat([]); //clear chat text
+      setChatConnectionInfo("Admin closed chat. Type something and submit to reconnect");
+      setReconnect(true);
+   })
+
     // Clean up function to disconnect the socket
     return () => {
       socket.disconnect();
@@ -49,6 +60,7 @@ const clientSubmitChatMsg = (e) => {
   if (e.keyCode && e.keyCode !== 13) {
     return;
   }
+  setChatConnectionInfo("");
   // Retrieve the input message value
   const msg = document.getElementById("clientChatMsg");
   let trimmedMsg = msg.value.trim();
@@ -90,6 +102,7 @@ const clientSubmitChatMsg = (e) => {
         </div>
         <div className="chat-form">
         <div className="cht-msg">
+        <p>{chatConnectionInfo}</p>
             {chat.map((item,id)=>{
               return(
                 <div key={id}>

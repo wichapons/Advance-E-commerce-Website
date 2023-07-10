@@ -12,8 +12,9 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socket, socketUser }) => 
   const [rerender, setRerender] = useState(false);
 
   //close chat box for admin
-  const close = () => {
+  const close = (socketId) => {
     window["closeToast" + roomIndex](false);
+    socket.emit("admin closes chat", socketId);
   };
 
   // Function to handle sending admin message to clients
@@ -62,8 +63,8 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socket, socketUser }) => 
   return (
     <>
       <Toast
-        show={window["toast" + roomIndex]}
-        onClose={() => close()}
+        show={"toast" + roomIndex}
+        onClose={() => close(chatRoom[0])}
         className="ms-4 mb-5"
       >
         <Toast.Header>

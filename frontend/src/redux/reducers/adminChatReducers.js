@@ -5,7 +5,7 @@ import * as actionTypes from "../constants/chatConstants";
 const CHAT_INITIAL_STATE = {
   chatRooms: {}, // Object to store chat messages for each user
   socket: false,
-  messageReceived: false
+  messageReceived: false,
 };
 
 // Reducer function for the admin chat
@@ -42,6 +42,15 @@ export const adminChatReducer = (state = CHAT_INITIAL_STATE, action) => {
         ...state,
         messageReceived: action.payload.value,
       };
+    case actionTypes.REMOVE_CHATROOM:
+      let currentState2 = { ...state };
+      //delete chat room
+      delete currentState2.chatRooms[action.payload.socketId];
+      return {
+        ...state,
+        chatRooms: { ...currentState2.chatRooms },
+      };
+
     default:
       return state;
   }
