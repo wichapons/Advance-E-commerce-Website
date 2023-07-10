@@ -3,6 +3,7 @@ import { Rating } from "react-simple-star-rating";
 import AddedToCartMessageComponent from "../../components/AddedToCartMessageComponent";
 import ImageZoom from "js-image-zoom";
 import { useEffect, useState, useRef } from "react";
+import MetaComponent from "../../components/MetaComponents";
 
 import { useParams } from "react-router-dom";
 
@@ -91,6 +92,8 @@ useEffect(() => {
 
 
   return (
+    <>
+    <MetaComponent title={product.name} description={product.description}/>
     <Container>
       <AddedToCartMessageComponent
         showCartMessage={showCartMessage}
@@ -241,6 +244,7 @@ useEffect(() => {
         )}
       </Row>
     </Container>
+    </>
   );
 };
 
