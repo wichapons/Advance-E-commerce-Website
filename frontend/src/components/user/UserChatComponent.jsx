@@ -15,7 +15,7 @@ const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 useEffect(() => {
   // Establish a socket connection only for non-admin users
   if (!userInfo.isAdmin) {
-    let audio = new Audio("/audio/chat-msg.wav");
+    let audio = new Audio("/audio/chat-msg.mp3");
     // Create a socket instance
     const socket = io('http://localhost:5000');
     setSocket(socket);
