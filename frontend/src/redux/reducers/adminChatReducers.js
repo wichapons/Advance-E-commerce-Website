@@ -1,17 +1,36 @@
+// Import the action types
 import * as actionTypes from "../constants/chatConstants";
 
+// Define the initial state of the chat
 const CHAT_INITIAL_STATE = {
-  chatRooms: {}, 
+  chatRooms: {}, // Object to store chat messages for each user
 }
 
+// Reducer function for the admin chat
 export const adminChatReducer = (state = CHAT_INITIAL_STATE, action) => {
-    switch (action.type) {
-        case actionTypes.SET_CHATROOMS:
-          return {
-              ...state,
-              chatRooms: { "to do:": "chatrooms for admin", [action.payload.user]: action.payload.message },
-          } 
-          default:
-           return state;   
-    }
+  switch (action.type) {
+    case actionTypes.SET_CHATROOMS:
+      let currentState = { ...state };
+      if (state.chatRooms[action.payload.user]) {
+        // If chat messages exist for the user, add the new message to the existing chat
+        currentState.chatRooms[action.payload.user].push({ client: action.payload.message });
+        return {
+          ...state,
+          chatRooms: { ...currentState.chatRooms },
+        }
+      } else {
+        // If chat messages don't exist for the user, create a new chat and add the message
+        return {
+          ...state,
+          chatRooms: { ...currentState.chatRooms, [action.payload.user]: [{ client: action.payload.message }] },
+        }
+      }
+      case actionTypes.SET_SOCKET:
+        return {
+           ...state,
+            socket: action.payload.socket,
+        } 
+    default:
+      return state;
+  }
 }
