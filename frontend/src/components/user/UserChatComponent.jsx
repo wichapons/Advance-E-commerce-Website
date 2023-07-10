@@ -7,6 +7,7 @@ const UserChatComponent = () => {
   
 const [socket, setSocket] = useState(false);
 const [chat, setChat] = useState([]);
+const [messageReceived, setMessageReceived] = useState(false);
 //get userInfo from redux
 const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 
@@ -23,6 +24,7 @@ useEffect(() => {
       // Update the chat state with the received admin message
       setChat((chat) => [...chat, { admin: msg }]);
       // Scroll to the bottom of the chat messages container
+      setMessageReceived(true);
       const chatMessages = document.querySelector(".cht-msg");
       chatMessages.scrollTop = chatMessages.scrollHeight;
     });
@@ -39,20 +41,16 @@ const clientSubmitChatMsg = (e) => {
   if (e.keyCode && e.keyCode !== 13) {
     return;
   }
-
-  
   // Retrieve the input message value
   const msg = document.getElementById("clientChatMsg");
   let trimmedMsg = msg.value.trim();
-  
   // Return early if the message is empty or falsy
   if (!trimmedMsg) {
     return;
   }
-  
   // Emit the "client sends message" event with the message value
   socket.emit("client sends message", trimmedMsg);
-  
+  setMessageReceived(false);
   // Update the chat state with the new client message
   setChat((chat) => {
     return [...chat, { client: trimmedMsg }];
@@ -69,15 +67,13 @@ const clientSubmitChatMsg = (e) => {
   }, 200);
 };
 
-
-  
   return (
     !userInfo.isAdmin ? (
     <>
       <input type="checkbox" id="checkbox" />
       <label className="chat-btn" htmlFor="checkbox">
         <i className="bi bi-chat-dots comment"></i>
-        <span className="position-absolute top-0 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
+        {messageReceived && <span className="position-absolute top-0 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>}
         <i className="bi bi-x-circle close"></i>
       </label>
       <div className="chat-wrapper">
