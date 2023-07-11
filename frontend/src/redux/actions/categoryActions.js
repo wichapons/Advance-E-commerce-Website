@@ -14,7 +14,6 @@ export const getCategories = () => async (dispatch) => {
 //save custom attribute to database and send to redux
 export const saveAttributeToCatDoc = (key, val, categoryChoosen) => async (dispatch, getState) => {
     const { data } = await axios.post("/api/categories/attr", { key, val, categoryChoosen }); 
-    console.log('Redux action triggered');
     if (data.categoryUpdated) {
         dispatch({
             type: actionTypes.SAVE_ATTR,

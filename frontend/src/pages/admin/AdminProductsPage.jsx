@@ -11,7 +11,6 @@ const fetchProducts = async (abortController) => {
 
 const deleteProduct = async (productId) => {
   const response = await axios.delete(`/api/products/admin/delete/${productId}`);
-  console.log(response);
   return response.data
 }
 

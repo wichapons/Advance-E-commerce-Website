@@ -146,7 +146,6 @@ const AdminEditProductPageComponent = ({
   //prevent submit form when user press enter
   const checkKeyDown = (e) => {
     if (e.keyCode === 13) {
-      console.log('triggered');
       e.preventDefault()
     };
   };
@@ -184,9 +183,8 @@ const AdminEditProductPageComponent = ({
   };
 
   const uploadInProgrssAlert =(e)=>{
-    console.log('triggered');
       setIsUploading("upload files in progress ..."); 
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.VITE_NODE_ENV === "production") {
           // to do: change to !==
           // Upload images to the server
           uploadImagesApiRequest(e.target.files, id)
@@ -377,7 +375,7 @@ const AdminEditProductPageComponent = ({
                     ref={createNewAttrVal}
                     disabled={categoryChoosen === "Choose category"}
                     placeholder="first choose or create category"
-                    required={true}
+                    {...(createNewAttrKey.current && createNewAttrKey.current.value !== '' ? { required: true } : {})}
                     name="newAttrValue"
                     type="text"
                     onKeyUp={newAttrValueHandler}
@@ -387,7 +385,7 @@ const AdminEditProductPageComponent = ({
             </Row>
 
             <Alert
-              show={newAttrKey && newAttrValue ? true : false}
+              show={newAttrKey || newAttrValue ? true : false}
               variant="primary"
             >
               After typing attribute key and value press enter on one of the

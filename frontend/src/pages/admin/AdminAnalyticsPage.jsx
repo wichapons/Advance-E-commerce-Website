@@ -10,7 +10,7 @@ const fetchOrdersForFirstDate = async (abctrl, firstDateToCompare) => {
     });
     return response.data;
   }catch(err){
-    console.log('err',err);
+    console.log('get api Order Analysis error',err);
     return;
   } 
 }

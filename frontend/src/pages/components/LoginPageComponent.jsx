@@ -36,7 +36,6 @@ const LoginPageComponent = ({loginUserApiRequest,reduxDispatch, setReduxUserStat
         //redirect after login successfully
         if (res.success === "user logged in" && !res.userLoggedIn.isAdmin) {
           //if not admin redirect to user
-          console.log('triggered');
           window.location.href = "/user";
           //navigate("/user", { replace: true }) //delete current url eg. shop/login after login success if user go back it will redirect to shop/
         }

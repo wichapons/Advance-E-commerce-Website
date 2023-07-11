@@ -23,7 +23,6 @@ const registerUser = async (req, res, next) => {
     }
     email = email.toLowerCase(); //change email to lower case
     const userExists = await User.findOne({ email });
-    console.log("userExists = ", userExists);
     //check if user exists
     if (userExists) {
       return res.status(400).send({ error: "user already existed" });

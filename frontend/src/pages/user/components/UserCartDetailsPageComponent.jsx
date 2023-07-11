@@ -20,7 +20,6 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal,addTo
             reduxDispatch(removeFromCart(productID, quantity, price));
         }
     }
-    console.log('itemsCount: ',itemsCount);
     const orderHandler = () => {
         const orderData = {
             orderTotal: {

@@ -6,13 +6,11 @@ const fetchUsersData = async (abortController) => {
     const response = await axios.get("/api/users", {
         signal: abortController.signal
     });
-    console.log(response);
     return response.data;
 }
 
 const deleteUser = async (userId) => {
   const response = await axios.delete(`/api/users/${userId}`);
-  console.log(response);
   return response.data;
 }
 

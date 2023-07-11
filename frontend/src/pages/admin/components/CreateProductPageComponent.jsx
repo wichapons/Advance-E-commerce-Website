@@ -67,7 +67,7 @@ const AdminCreateProductPageComponent = ({
       createProductApiRequest(formInputs)
         .then((data) => {
           if (images) {
-            if (process.env.NODE_ENV === "production") {
+            if (import.meta.env.VITE_NODE_ENV === "production") {
               // to do: change to !==
               // Upload images to the server and path to database
               uploadImagesApiRequest(images, data.productId)
@@ -106,9 +106,7 @@ const AdminCreateProductPageComponent = ({
   const newCategoryHandler = (e) => {
     // Check if the event has a key code and it's equal to 13 (Enter key)
     if (e.keyCode && e.keyCode === 13 && e.target.value) {
-      console.log("triggered2");
       // Dispatch a Redux action called "newCategory" with the target value as the payload
-      console.log("new cat:", e.target.value);
       reduxDispatch(newCategory(e.target.value));
       setTrigger(!trigger);
       // Set a timeout to delay the following operations
@@ -176,14 +174,12 @@ const AdminCreateProductPageComponent = ({
 
   //add custom attr update to redux and db
   const addNewAttributeManually = (e) => {
-    console.log(e.keyCode);
     if (e.keyCode && e.keyCode === 13) {
       if (newAttrKey && newAttrValue) {
         reduxDispatch(
           saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChoosen)
         );
         setAttributesTableWrapper(newAttrKey, newAttrValue, setAttributesTable);
-        console.log('categories real ',categories);
         e.target.value = "";
         createNewAttrKey.current.value = "";
         createNewAttrVal.current.value = "";
@@ -191,7 +187,6 @@ const AdminCreateProductPageComponent = ({
           const { categories } = useSelector((state) => state.getCategories);
           setNewAttrKey(false);
           setNewAttrValue(false);
-          console.log('categories real 2 ',categories);
         },1000)
         
       }
@@ -270,8 +265,8 @@ const AdminCreateProductPageComponent = ({
                 ))}
               </Form.Select>
             </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicNewCategory">
+                  {/* UNDER MAINTENANCE */}
+            {/* <Form.Group className="mb-3" controlId="formBasicNewCategory">
               <Form.Label>
                 Or create a new category (e.g. Computers/Laptops/Intel){" "}
               </Form.Label>
@@ -280,7 +275,7 @@ const AdminCreateProductPageComponent = ({
                 name="newCategory"
                 type="text"
               />
-            </Form.Group>
+            </Form.Group> */}
 
             {attributesFromDb.length > 0 && (
               <Row className="mt-5">
@@ -378,7 +373,7 @@ const AdminCreateProductPageComponent = ({
                   <Form.Control
                     disabled={categoryChoosen === "Choose category"}
                     placeholder="first choose or create category"
-                    required={newAttrKey}
+                    {...(createNewAttrKey.current && createNewAttrKey.current.value !== '' ? { required: true } : {})}
                     name="newAttrValue"
                     type="text"
                     ref={createNewAttrVal}
@@ -388,7 +383,7 @@ const AdminCreateProductPageComponent = ({
               </Col>
             </Row>
 
-            <Alert show={newAttrKey && newAttrValue ? true : false} variant="primary">
+            <Alert show={newAttrKey || newAttrValue ? true : false} variant="primary">
               After typing attribute key and value press enter on one of the
               field
             </Alert>

@@ -13,7 +13,7 @@ const ProductCarouselComponent = ({bestSellers}) => {
             crossOrigin="anonymous"
             className="d-block w-100"
             style={{ height: "300px", objectFit: "cover" }}
-            src={item.images ? item.images[0].path : null}
+            src={(item.images && item.images.length > 0) ? item.images[0].path : null}
             alt="First slide"
           />
           <Carousel.Caption>

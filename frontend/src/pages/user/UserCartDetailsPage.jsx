@@ -18,7 +18,6 @@ const UserCartDetailsPage = () => {
   //send order update to db
   const createOrder = async (orderData) => {
     const response = await axios.post("/api/orders", { ...orderData });
-    console.log(response);
     return response.data;
   }
 

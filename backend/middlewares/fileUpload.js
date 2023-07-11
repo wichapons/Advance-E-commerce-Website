@@ -32,7 +32,6 @@ function uploadFile(req, res, next) {
             }
         });    
         upload.array('images', 4); // Create an array of images by getting from input named "images" in the submitted form, maximum of 3 images
-        console.log(req.files); 
     }catch(err){
         next(err)
     }

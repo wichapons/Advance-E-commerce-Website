@@ -49,7 +49,6 @@ const ProductListPageComponent = ({ getProducts,categories }) => {
         console.log(er);
         setError(true);
       });
-      console.log(filters);
   }, [filters, sortOption,categoryName,pageNumParam, searchQuery]);
 
   //get category data and attribute

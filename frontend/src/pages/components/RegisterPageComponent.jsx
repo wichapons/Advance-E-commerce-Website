@@ -104,7 +104,6 @@ const RegistrationPageComponent = ({ registerUserApiRequest,reduxDispatch, setRe
           reduxDispatch(setReduxUserState(res.userCreated)); // set redux initial value from response
         })
         .catch((er) => {
-          console.log(er);
           setRegisterUserResponseState({loading:false});
           setRegisterUserResponseState({error: er.response.data.error, loading:false});
         });

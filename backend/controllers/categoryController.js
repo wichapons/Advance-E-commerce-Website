@@ -12,7 +12,7 @@ const getCategories = async (req, res, next) => {
 const newCategory = async (req, res, next) => {
     try {
         const {category} = req.body
-        console.log('create category data frontend',req.body);
+        //console.log('create category data frontend',req.body);
         if(!category) { //only body that contains "category" will being process
             res.status(400).send("Category input is required")
         }else{
@@ -66,7 +66,7 @@ const saveAttr = async (req, res, next) => {
                     let newAttributeValues = [...new Set(copyAttributeValues)]; // use Set command to prevent duplicates
                     categoryExists.attrs[idx].value = newAttributeValues; //assign new value to main category
                 }
-                console.log("categoryExists = ",categoryExists.attrs[1]);
+                //console.log("categoryExists = ",categoryExists.attrs[1]);
                 return;
             })
 
