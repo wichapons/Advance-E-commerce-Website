@@ -5,8 +5,6 @@ const ProductCarouselComponent = ({bestSellers}) => {
   const cursorP = {
     cursor: "pointer",
   };
-  
-  console.log(bestSellers);
   return bestSellers.length > 0 ? (
     <Carousel>
       {bestSellers.map((item, idx) => (
@@ -22,7 +20,7 @@ const ProductCarouselComponent = ({bestSellers}) => {
             <LinkContainer style={cursorP} to={`/product-details/${item._id}`}>
               <h3>Bestseller in {item.category} Category</h3>
             </LinkContainer>
-            <p>{item.description}</p>
+            
           </Carousel.Caption>
         </Carousel.Item>
       ))}

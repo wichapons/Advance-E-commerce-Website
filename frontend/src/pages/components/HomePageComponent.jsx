@@ -18,6 +18,8 @@ const HomePageComponent = ({ categories,getBestsellers }) => {
     setMainCategories((cat) => categories.filter((item) => !item.name.includes("/")));
 }, [categories])
 
+console.log('mainCategories: ',mainCategories);
+
   return (
     <>
     <MetaComponent/>

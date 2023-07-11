@@ -12,6 +12,7 @@ const getCategories = async (req, res, next) => {
 const newCategory = async (req, res, next) => {
     try {
         const {category} = req.body
+        console.log('create category data frontend',req.body);
         if(!category) { //only body that contains "category" will being process
             res.status(400).send("Category input is required")
         }else{
