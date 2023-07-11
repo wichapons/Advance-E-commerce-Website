@@ -199,7 +199,7 @@ useEffect(() => {
                           {review.user.name} <br />
                           <Rating readonly size={20} initialValue={review.rating} />
                           <br />
-                          {review.createdAt.substring(0, 10)} <br />
+                          {review.createdAt ? review.createdAt.substring(0, 10) : 'N/A'} <br />
                           {review.comment}
                         </ListGroup.Item>
                         ))}
