@@ -80,7 +80,9 @@ const loginUser = async (req, res, next) => {
     }
     if (user && await comparePasswords(password, user.password) === true) {
       if (doNotLogout) {
-        cookieParams = { ...cookieParams, maxAge: 1000 * 60 * 60 * 24 * 7 }; // 1000=1ms
+        cookieParams = { ...cookieParams, maxAge: 1000 * 60 * 60 * 24 * 7 }; // set maxAge to 7 days 
+      }else{
+        cookieParams = { ...cookieParams, maxAge: 1000 * 60 * 60 * 24}; // set maxAge to 24 hr
       }
       return res
         .cookie(
