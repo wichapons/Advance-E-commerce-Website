@@ -23,18 +23,4 @@ The e-commerce website incorporates various features to provide a seamless shopp
 - **Chat Functionality**: Leveraging Socket.IO, users can chat with customer support.
 - **Admin UI**: The application includes an intuitive and user-friendly admin interface for efficient order management.
 
-## Getting Started
-
-To get started with this project, follow these steps:
-
-1. Clone the repository: `git clone https://github.com/wichapons/advance-e-commerce-website.git`
-2. Install dependencies for the backend: `cd backend && npm install`
-3. Set up your MongoDB database and update the connection details in the backend configuration.
-4. Start the backend server: `npm start`
-5. Install dependencies for the frontend: `cd frontend && npm install`
-6. Update the API endpoint in the frontend configuration to match your backend server.
-7. Start the frontend development server: `npm run dev`
-8. Access the frontend application in your browser at `http://localhost:3000` (Please see the Vite configuration file for more details.)
-9. Start the frontend development server: `npm start`
-10. Access the backend application in your browser at `http://localhost:5000` 
 
