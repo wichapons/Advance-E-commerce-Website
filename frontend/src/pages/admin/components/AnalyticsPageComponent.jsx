@@ -98,7 +98,7 @@ const AdminAnalyticsPageComponent = ({
 
   useEffect(() => {
     // Create a socket instance
-    const socket = socketIOClient("http://localhost:5000");
+    const socket = socketIOClient(import.meta.env.VITE_TARGET);
     
     // Get today's date
     let today = new Date().toDateString();

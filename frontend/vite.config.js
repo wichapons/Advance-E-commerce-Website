@@ -9,7 +9,7 @@ export default defineConfig({
     port: '3000',
     proxy: {
       '/api': {
-        target: 'http://localhost:5000/',
+        target: "https://topazio-shop-backend.onrender.com",
         changeOrigin: true,
         //rewrite: (path) => path.replace(/^\/api/, '')
       }
