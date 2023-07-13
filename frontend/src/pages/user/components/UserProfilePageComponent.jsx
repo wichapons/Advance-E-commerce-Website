@@ -6,7 +6,17 @@ const UserProfilePageComponent = ({updateUserApiRequest,fetchUser, userInfoFromR
   const [updateUserResponseState, setUpdateUserResponseState] = useState({ success: "", error: "" });
   const [passwordsMatchState, setPasswordsMatchState] = useState(false);
   const [confirmPasswordsMatchState, setconfirmPasswordsMatchState] = useState(false);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({
+    name: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    country: '',
+    zipCode: '',
+    city: '',
+    state: ''
+  });
   const userInfo = userInfoFromRedux;
 
   //use useEffect for fetching an userInfo immediately after the page is loaded
@@ -168,7 +178,7 @@ const UserProfilePageComponent = ({updateUserApiRequest,fetchUser, userInfoFromR
                 isValid={passwordsMatchState}
               />
               <Form.Control.Feedback type="invalid">
-                Please anter a valid password
+                Please enter a valid password
               </Form.Control.Feedback>
               <Form.Text className="text-muted">
                 Password should have at least 6 characters

@@ -197,7 +197,7 @@ const AdminAnalyticsPageComponent = ({
       </Col>
       <Col md={10}>
         <h1>
-          Black Friday Cumulative Revenue {firstDateToCompare} VS{" "}
+          Revenue on {firstDateToCompare} VS{" "}
           {secondDateToCompare}
         </h1>
         <Form.Group controlId="firstDateToCompare">
