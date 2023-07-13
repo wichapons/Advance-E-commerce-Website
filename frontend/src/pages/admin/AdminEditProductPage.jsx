@@ -27,7 +27,7 @@ const AdminEditProductPage = () => {
   //for delete image in the database
   const imageDeleteHandler = async (imagePath, productId) => {
     let encoded = encodeURIComponent(imagePath); //encode first because there is some / in our text
-    if (import.meta.env.VITE_NODE_ENV === "production") {
+    if (import.meta.env.VITE_NODE_ENV === "uploadLocal") {
       // to do: change to !==
       await axios
       .delete(`/api/products/admin/image/${encoded}/${productId}`)

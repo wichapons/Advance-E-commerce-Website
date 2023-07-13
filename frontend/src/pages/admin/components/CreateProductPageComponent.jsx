@@ -67,7 +67,7 @@ const AdminCreateProductPageComponent = ({
       createProductApiRequest(formInputs)
         .then((data) => {
           if (images) {
-            if (import.meta.env.VITE_NODE_ENV === "production") {
+            if (import.meta.env.VITE_NODE_ENV === "uploadLocal") {
               // to do: change to !==
               // Upload images to the server and path to database
               uploadImagesApiRequest(images, data.productId)

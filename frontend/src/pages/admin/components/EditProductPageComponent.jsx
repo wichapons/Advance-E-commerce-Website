@@ -184,7 +184,7 @@ const AdminEditProductPageComponent = ({
 
   const uploadInProgrssAlert =(e)=>{
       setIsUploading("upload files in progress ..."); 
-      if (import.meta.env.VITE_NODE_ENV === "production") {
+      if (import.meta.env.VITE_NODE_ENV === "uploadLocal") {
           // to do: change to !==
           // Upload images to the server
           uploadImagesApiRequest(e.target.files, id)
