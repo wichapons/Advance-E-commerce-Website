@@ -2,7 +2,6 @@ import { Row, Col, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useState,useEffect } from "react";
 const UserOrdersPageComponent = ({getOrders}) => {
-    getOrders().then((res)=>console.log(res))
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
