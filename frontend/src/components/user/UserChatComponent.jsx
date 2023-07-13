@@ -21,7 +21,7 @@ useEffect(() => {
     setReconnect(false);
     let audio = new Audio("/audio/chat-msg.mp3");
     // Create a socket instance
-    const socket = io(import.meta.env.VITE_TARGET);
+    const socket = io("https://topazio-shop-backend.onrender.com");
     //listen to "no admin" signal from socket.io
     socket.on("no admin", (msg) => {
       setChat((chat) => {
