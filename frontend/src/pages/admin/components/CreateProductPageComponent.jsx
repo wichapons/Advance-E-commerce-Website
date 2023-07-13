@@ -240,8 +240,9 @@ const AdminCreateProductPageComponent = ({
             <Form.Group className="mb-3" controlId="formBasicCategory">
               <Form.Label>
                 Category
-                <CloseButton onClick={deleteCategoryHandler} />(
-                <small>Press X for deleting this category</small>)
+                  {/* UNDER MAINTENANCE */}
+                {/* <CloseButton onClick={deleteCategoryHandler} />(
+                <small>Press X for deleting this category</small>) */}
               </Form.Label>
               <Form.Select
                 required
@@ -349,8 +350,8 @@ const AdminCreateProductPageComponent = ({
                 </Table>
               )}
             </Row>
-
-            <Row>
+                      {/* UNDER MAINTENANCE */}
+            {/* <Row>
               <Col md={6}>
                 <Form.Group className="mb-3" controlId="formBasicNewAttribute">
                   <Form.Label>Create new attribute</Form.Label>
@@ -386,7 +387,7 @@ const AdminCreateProductPageComponent = ({
             <Alert show={newAttrKey || newAttrValue ? true : false} variant="primary">
               After typing attribute key and value press enter on one of the
               field
-            </Alert>
+            </Alert> */}
 
             <Form.Group controlId="formFileMultiple" className="mb-3 mt-3">
               <Form.Label>Images</Form.Label>
