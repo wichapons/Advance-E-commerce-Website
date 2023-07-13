@@ -17,7 +17,7 @@ const cookieParser = require("cookie-parser");
 const http = require('http');
 const configureSocketIO = require("./middlewares/socket")
 const httpServer = http.createServer(app);
-const io = configureSocketIO(httpServer);
+global.io = configureSocketIO(httpServer);
 //error handler
 const errorHandler = require("./middlewares/errorHandler")
 
