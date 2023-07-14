@@ -1,5 +1,5 @@
 {
     "rewrites": [
-        { "source": "/api/:path(.*)", "destination": "https://topazio-shop-backend.onrender.com/api" }
+        { "source": "/api/:path(.*)", "destination": "https://topazio-shop-backend.onrender.com" }
     ]
 }
