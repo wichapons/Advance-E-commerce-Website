@@ -4,7 +4,7 @@ import AddedToCartMessageComponent from "../../components/AddedToCartMessageComp
 import ImageZoom from "js-image-zoom";
 import { useEffect, useState, useRef } from "react";
 import MetaComponent from "../../components/MetaComponents";
-
+import { ColorRing } from "react-loader-spinner";
 import { useParams } from "react-router-dom";
 
 const ProductDetailsPageComponent = ({
@@ -101,7 +101,15 @@ useEffect(() => {
       />
       <Row className="mt-5">
         {loading ? (
-          <h2>Loading product details ...</h2>
+          <ColorRing
+              visible={true}
+              height="7rem"
+              width="7rem"
+              ariaLabel="blocks-loading"
+              wrapperStyle={{marginTop: "10rem" }}
+              wrapperClass="blocks-wrapper"
+              colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+            />
         ) : error ? (
           <h2>{error}</h2>
         ) : (
