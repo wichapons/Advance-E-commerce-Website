@@ -35,12 +35,16 @@ const LoginPageComponent = ({loginUserApiRequest,reduxDispatch, setReduxUserStat
       }
         //redirect after login successfully
         if (res.success === "user logged in" && !res.userLoggedIn.isAdmin) {
+          navigate('/',{replace:true})
           //if not admin redirect to user
           window.location.href = "/";
           //navigate("/user", { replace: true }) //delete current url eg. shop/login after login success if user go back it will redirect to shop/
         }
           //if admin navigate to admin page
-        else window.location.href = "/admin/orders";// navigate("/admin/orders", { replace: true });
+        else {
+          navigate('/admin/orders',{replace:true})
+          window.location.href = "/admin/orders";
+        }// navigate("/admin/orders", { replace: true });
       })
       .catch((err) => {
         console.log(err);
