@@ -5,10 +5,10 @@ import React, { useEffect, useState } from "react";
 import LoginPage from "../pages/LoginPage";
 import { ColorRing } from "react-loader-spinner";
 
-const ProtectedRoutesComponents = ({admin}) => {
+const ProtectedRoutesComponents = ({ isAdminPage }) => {
   const [isAuth, setIsAuth] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
-  
+
   useEffect(() => {
     axios.get("/api/get-token").then(function (res) {
       if (res.data) {
@@ -17,11 +17,10 @@ const ProtectedRoutesComponents = ({admin}) => {
       } else {
         setIsAuth(false);
         setIsAdmin(false);
-
       }
       return;
     });
-  }, [isAuth,isAdmin]);
+  }, [isAuth, isAdmin]);
 
   //while verifying Cookie & Token render loading ring
   if (isAuth === null || isAdmin === null) {
@@ -40,15 +39,15 @@ const ProtectedRoutesComponents = ({admin}) => {
   //render loginPage if not authorise
   else if (isAuth === false) {
     return <LoginPage />;
-  } else if (isAuth) {
+  } else if (isAuth && isAdminPage && isAdmin) {
+    return <Outlet />;
+  } else if (isAuth && !isAdmin && !isAdminPage ) {
     return (
       <>
         <UserChatComponent />
         <Outlet />
       </>
     );
-  } else if (isAuth && isAdmin == "admin") {
-    return <Outlet />;
   } else {
     return <Navigate to="/login" />;
   }
