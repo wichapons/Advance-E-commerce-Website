@@ -101,7 +101,7 @@ const RegistrationPageComponent = ({ registerUserApiRequest,reduxDispatch, setRe
         registerUserApiRequest(name, lastName, email, password) // get api request from back end
         .then((res) => {
           setRegisterUserResponseState({success:res.success, loading:false});
-          reduxDispatch(setReduxUserState(res.userCreated)); // set redux initial value from response
+          //reduxDispatch(setReduxUserState(res.userCreated)); // set redux initial value from response
         })
         .catch((er) => {
           setRegisterUserResponseState({loading:false});
