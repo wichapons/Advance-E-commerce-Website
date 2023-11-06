@@ -275,7 +275,7 @@ const deleteUserById = async (req, res, next) => {
   try {
      const user = await User.findById(req.params.id).orFail();
      await user.deleteOne(); 
-     res.send("user removed");
+     res.status(200).send("user removed");
   } catch (err) {
       next(err);
   }
