@@ -15,7 +15,7 @@ const updateUserApiRequest = async (
   state,
   password
 ) => {
-  const response = await axios.put("/api/users/profile", {
+  const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile`, {
     name,
     lastName,
     phoneNumber,
@@ -32,7 +32,7 @@ const updateUserApiRequest = async (
 //get user details via GET method
 const fetchUser = async (id) => {
   
-  const response = await axios.get("/api/users/profile/" + id);
+  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile/` + id);
   return response.data;
 };
 

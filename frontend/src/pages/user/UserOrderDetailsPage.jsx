@@ -8,12 +8,12 @@ const UserOrderDetailsPage = () => {
   const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 
   const getUser = async () => {
-    const { data } = await axios.get("/api/users/profile/" + userInfo._id);
+    const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile/` + userInfo._id);
     return data;
   };
 
   const getOrder = async (orderId) => {
-    const { data } = await axios.get("/api/orders/user/" + orderId);
+    const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/orders/user/` + orderId);
     return data;
   };
 
@@ -99,7 +99,7 @@ const onCancelHandler = function () {
 }
 
 const updateOrder = async (orderId) => {
-  const { data } = await axios.put("/api/orders/paid/" + orderId);
+  const { data } = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/orders/paid/` + orderId);
   return data;
 }
 

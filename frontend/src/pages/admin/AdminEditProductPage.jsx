@@ -7,12 +7,12 @@ import { uploadImagesApiRequest,uploadImagesCloudinaryApiRequest } from "./utils
 
 //get product data from db
 const fetchProduct = async (productId) => {
-  const { data } = await axios.get(`/api/products/get-one/${productId}`);
+  const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/products/get-one/${productId}`);
   return data;
 };
 //update product details on db
 const updateProductApiRequest = async (productId, formInputs) => {
-  const { data } = await axios.put(`/api/products/admin/update/${productId}`, {
+  const { data } = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/products/admin/update/${productId}`, {
     ...formInputs,
   });
   return data;
@@ -23,18 +23,17 @@ const AdminEditProductPage = () => {
   const { categories } = useSelector((state) => state.getCategories);
 
   const reduxDispatch = useDispatch();
-
   //for delete image in the database
   const imageDeleteHandler = async (imagePath, productId) => {
     let encoded = encodeURIComponent(imagePath); //encode first because there is some / in our text
     if (import.meta.env.VITE_NODE_ENV === "uploadLocal") {
       // to do: change to !==
       await axios
-      .delete(`/api/products/admin/image/${encoded}/${productId}`)
+      .delete(`${import.meta.env.VITE_API_BASE_URL}/api/products/admin/image/${encoded}/${productId}`)
       .then((res) => {
       });
     }else{
-      await axios.delete(`/api/products/admin/image/${encoded}/${productId}?cloudinary=true`);  
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/products/admin/image/${encoded}/${productId}?cloudinary=true`);  
     }
       
   }

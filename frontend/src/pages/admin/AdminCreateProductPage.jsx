@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 
 
 const createProductApiRequest = async (formInputs) => {
-  const { data } = await axios.post(`/api/products/admin/create`, {
+  const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/products/admin/create`, {
     ...formInputs,
   });
   return data;

@@ -4,13 +4,13 @@ import { useDispatch,useSelector  } from "react-redux";
 import axios from 'axios'
 
 const getProductDetails = async(id) => {
-    const { data } = await axios.get(`/api/products/get-one/${id}`);
+    const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/products/get-one/${id}`);
     return data
 }
 
 //send new user review to database 
 const writeReviewApiRequest = async (productId, formInputs) => {
-  const { data } = await axios.post(`/api/users/review/${productId}`, { ...formInputs });
+  const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/users/review/${productId}`, { ...formInputs });
   return data;
 }
 
