@@ -10,7 +10,7 @@ const ProtectedRoutesComponents = ({ isAdminPage }) => {
   const [isAdmin, setIsAdmin] = useState(null);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/get-token`).then(function (res) {
+    axios.get("/api/get-token").then(function (res) {
       if (res.data) {
         setIsAuth(res.data.token);
         setIsAdmin(res.data.isAdmin);

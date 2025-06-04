@@ -5,7 +5,7 @@ import { setReduxUserState } from "../redux/actions/userActions";
 
 //api request
 const loginUserApiRequest = async (email, password, doNotLogout) => {
-  const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/users/login`, { email, password, doNotLogout });
+  const response = await axios.post("/api/users/login", { email, password, doNotLogout });
 
   if (response.data.userLoggedIn.doNotLogout) {
     localStorage.setItem("userInfo", JSON.stringify(response.data.userLoggedIn));

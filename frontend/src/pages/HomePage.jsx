@@ -4,7 +4,7 @@ import axios from "axios";
 
 //getBestsellers products
 const getBestsellers = async () => {
-  const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/products/bestsellers`);
+  const { data } = await axios.get("/api/products/bestsellers");
   return data;
 }
 

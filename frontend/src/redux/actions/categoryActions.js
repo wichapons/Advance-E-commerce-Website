@@ -4,7 +4,7 @@ import axios from "axios";
 
 //fetch category data from db and then save to redux
 export const getCategories = () => async (dispatch) => {
-    const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
+    const { data } = await axios.get("/api/categories");
     dispatch({
         type: actionTypes.GET_CATEGORIES_REQUEST,
         payload: data,
@@ -13,7 +13,7 @@ export const getCategories = () => async (dispatch) => {
 
 //save custom attribute to database and send to redux
 export const saveAttributeToCatDoc = (key, val, categoryChoosen) => async (dispatch, getState) => {
-    const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/categories/attr`, { key, val, categoryChoosen }); 
+    const { data } = await axios.post("/api/categories/attr", { key, val, categoryChoosen }); 
     if (data.categoryUpdated) {
         dispatch({
             type: actionTypes.SAVE_ATTR,
@@ -26,7 +26,7 @@ export const saveAttributeToCatDoc = (key, val, categoryChoosen) => async (dispa
  export const newCategory = (category) => async (dispatch, getState) => {
     //get category data from redux state
     const cat = getState().getCategories.categories;
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/categories`, { category });
+    const response = await axios.post("/api/categories", { category });
     //if category was created then dispatch the reducer
     if (response.data.categoryCreated) {
         dispatch({
@@ -41,7 +41,7 @@ export const deleteCategory = (category) => async (dispatch, getState) => {
     const cat = getState().getCategories.categories;
     const categories = cat.filter((item) => item.name !== category);
     //encode something like space / * that are in category name
-    const { data } = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/categories/` + encodeURIComponent(category));
+    const { data } = await axios.delete("/api/categories/" + encodeURIComponent(category));
     if (data.categoryDeleted) {
         dispatch({
            type: actionTypes.DELETE_CATEGORY, 

@@ -6,7 +6,7 @@ export const uploadImagesApiRequest = async (images, productId) => {
     Array.from(images).forEach(image => {
         formData.append("images", image);
     })
-    const {data} = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/products/admin/upload?productId=` + productId, formData);
+    const {data} = await axios.post("/api/products/admin/upload?productId=" + productId, formData);
     return data;
   }
 
@@ -26,7 +26,7 @@ export const uploadImagesCloudinaryApiRequest = (images,productId) => {
         axios.post(url,formData)
         .then(res => {
           //update images path in database
-          axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/products/admin/upload?cloudinary=true&productId=` + productId, res.data);
+          axios.post("/api/products/admin/upload?cloudinary=true&productId=" + productId, res.data);
         })
         .catch(error => {
           console.error(error); // Handle any errors
