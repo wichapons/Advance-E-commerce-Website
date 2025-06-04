@@ -50,9 +50,10 @@ const proceedFilters = (filters) => {
 // fetching products from db depends on filter
 const getProducts = async (categoryName = "", pageNumParam = null, searchQuery = "", filters = {}, sortOption = "") => {
   
-  let filtersUrl = proceedFilters(filters);  //expected format: filtersUrl = "&price=60&rating=1,2,3&category=a,b,c,d&attrs=color-red-blue,size-1TB-2TB";  const search = searchQuery ? `search/${searchQuery}/` : "";
+  let filtersUrl = proceedFilters(filters);  //expected format: filtersUrl = "&price=60&rating=1,2,3&category=a,b,c,d&attrs=color-red-blue,size-1TB-2TB";
+  const search = searchQuery ? `search/${searchQuery}/` : "";
   const category = categoryName ? `category/${categoryName}/` : "";
-  const url = `${import.meta.env.VITE_API_BASE_URL}/api/products/${category}${search}?pageNum=${pageNumParam}${filtersUrl}&sort=${sortOption}`;
+  const url = `/api/products/${category}${search}?pageNum=${pageNumParam}${filtersUrl}&sort=${sortOption}`;
 
   const response = await axios.get(url);
   return response.data

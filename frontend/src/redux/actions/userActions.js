@@ -10,7 +10,7 @@ export const setReduxUserState = (userCreated) => (dispatch) => {
 
 export const logout = () => (dispatch) => {
     document.location.href = "/login";
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/logout`)
+    axios.get('/api/logout')
     //clear data in local storage and sessions
     localStorage.removeItem("userInfo");
     sessionStorage.removeItem("userInfo");

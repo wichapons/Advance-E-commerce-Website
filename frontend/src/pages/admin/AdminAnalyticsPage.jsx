@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 const fetchOrdersForFirstDate = async (abctrl, firstDateToCompare) => {
   // Fetch orders data for the first date to compare
   try{
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/orders/analysis/` + firstDateToCompare, {
+    const response = await axios.get("/api/orders/analysis/" + firstDateToCompare, {
       signal: abctrl.signal,
     });
     return response.data;
@@ -17,7 +17,7 @@ const fetchOrdersForFirstDate = async (abctrl, firstDateToCompare) => {
 
 const fetchOrdersForSecondDate = async (abctrl, secondDateToCompare) => {
   // Fetch orders data for the second date to compare
-  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/orders/analysis/` + secondDateToCompare, {
+  const response = await axios.get("/api/orders/analysis/" + secondDateToCompare, {
     signal: abctrl.signal,
   });
   return response.data;

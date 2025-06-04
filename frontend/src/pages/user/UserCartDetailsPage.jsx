@@ -10,12 +10,14 @@ const UserCartDetailsPage = () => {
   const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 
   const reduxDispatch = useDispatch();
+
   const getUser = async () => {
-    const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile/` + userInfo._id);
+    const { data } = await axios.get("/api/users/profile/" + userInfo._id);
     return data
-}  //send order update to db
+}
+  //send order update to db
   const createOrder = async (orderData) => {
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/orders`, { ...orderData });
+    const response = await axios.post("/api/orders", { ...orderData });
     return response.data;
   }
 
