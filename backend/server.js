@@ -3,6 +3,8 @@ require("dotenv").config();
 //Express.js
 const express = require("express");
 const app = express();
+//CORS
+const cors = require("cors");
 //Database
 const connectDB = require("./config/db");
 //Database connection
@@ -20,6 +22,12 @@ const httpServer = http.createServer(app);
 global.io = configureSocketIO(httpServer);
 //error handler
 const errorHandler = require("./middlewares/errorHandler")
+
+//CORS configuration - Allow all origins
+app.use(cors({
+  origin: true, // This allows all origins
+  credentials: true // This allows cookies to be sent
+}));
 
 app.use(errorHandler)
 app.use(fileUpload());
